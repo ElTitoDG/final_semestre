@@ -1,7 +1,7 @@
 #include "tigr.h"
 #include <stdio.h>
 
-int main() {
+int main(int argc, char *argv[]) {
   Tigr *screen = tigrWindow(320, 240, "Hello", 0);
 
   while (!tigrClosed(screen)) {
