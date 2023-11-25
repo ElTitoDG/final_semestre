@@ -55,7 +55,7 @@ DEBUG := -g3 -DDEBUG=1
 
 # Libs dependency
 ifeq ($(OS), Darwin)
-	LIBS := -framework OpenGL -framework Cocoa
+	LIBS := -framework OpenGL -framework Cocoa -lm
 else
 	LIBS := -lGLU -lGL -lX11
 endif
