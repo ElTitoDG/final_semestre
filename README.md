@@ -1,5 +1,7 @@
 # Proyecto final semestre
 
-Test
+El proyecto consiste en desarrollar un videojuego en C usando la libreria TIGR
 
-Tesr
+Para encontrar más información sobre la base de codigo ver este [archivo](TIGR.md)
+
+Para ver la explicación del ejemplo básico ver este [archivo](example.md)
