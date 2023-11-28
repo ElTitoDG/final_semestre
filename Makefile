@@ -10,7 +10,6 @@
 
 PROJECT_NAME := project
 BINARY := game
-PROJECT_PATH := ~/Documents/Books/University/UA/Programación 1/Prácticas/$(PROJECT_NAME)
 
 OS := $(shell uname -s)
 
