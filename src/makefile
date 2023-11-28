@@ -43,26 +43,20 @@ endif
 # Defines language standards
 STD := -std=c2x
 
-# Specifies to CC the required warnings
-#WARNS := -Wall -Wextra
+CFLAGS += $(STD) -I../..
 
-# Flags for compiling
-CFLAGS := -O3 $(STD) $(WARNS)
-
-# Debug options
-DEBUG := -g3 -DDEBUG=1
-
-# Libs dependency
-ifeq ($(OS), Darwin)
-	LIBS := -framework OpenGL -framework Cocoa -lm
+ifeq ($(OS),Windows_NT)
+	LDFLAGS += -s -lopengl32 -lgdi32
 else
-	LIBS := -lGLU -lGL -lX11
+	UNAME_S := $(shell uname -s)
+
+	ifeq ($(UNAME_S),Darwin)
+		LDFLAGS += -framework OpenGL -framework Cocoa
+	else ifeq ($(UNAME_S),Linux)
+		LDFLAGS += -s -lGLU -lGL -lX1
+	endif
+
 endif
-
-# %.o file names
-NAMES := $(notdir $(basename $(wildcard $(SRCDIR)/*.$(SRCEXT))))
-OBJECTS :=$(patsubst %,$(LIBDIR)/%.o,$(NAMES))
-
 
 #
 # COMPILATION RULES
@@ -84,29 +78,24 @@ help:
 	@echo "    clean    - Clean the project by removing binaries"
 	@echo "    help     - Prints a help message with target rules"
 	@echo
+	
 
-# Rule for link and generate the binary file
-all: $(OBJECTS)
-# @echo -en "$(BROWN)LD$(END_COLOR)";
-	$(CC) -o $(BINDIR)/$(BINARY) $+ $(CFLAGS) $(LIBS)
+all : *.$(SRCEXT)
+	$(CC) $^ -Os -o ../$(BINDIR)/$(BINARY) $(CFLAGS) $(LDFLAGS)
 	@echo "\nBinary file placed at" \
-			  "$(BROWN)$(BINDIR)/$(BINARY)$(END_COLOR)\n";
+		"$(BROWN)$(BINDIR)/$(BINARY)$(END_COLOR)\n";
 
 
-# Rule for object bineries
-$(LIBDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
-# @echo -en "$(BROWN)CC$(END_COLOR)"
-	$(CC) -c $^ -o $@ $(CFLAGS) 
 
 # Run the binary files
-run: $(BINDIR)/$(BINARY)
+run: ../$(BINDIR)/$(BINARY)
 	./$^
 
 # Rule for creating the required dirs
 dirs:
-	mkdir -p $(SRCDIR) $(BINDIR) $(LOGDIR) $(LIBDIR)
+	mkdir -p ../$(SRCDIR) ../$(BINDIR) ../$(LOGDIR) ../$(LIBDIR)
 
 
 # Rule for cleaning the project
 clean:
-	@rm -rvf $(BINDIR)/* $(LIBDIR)/* *.txt; #$(LOGDIR)/*
+	@rm -rvf ../$(BINDIR)/* ../$(LIBDIR)/* *.txt; #../$(LOGDIR)/*
