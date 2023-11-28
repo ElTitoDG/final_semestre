@@ -9,8 +9,10 @@ int main(int argc, char *argv[]) {
 
   // Loads player
   player = tigrLoadImage("player.png");
-  // if (!player)
-  //   tigrError(0, "Cannot load player.png");
+
+  if (!player) {
+    tigrError(0, "No se puede cargar player.png");
+  }
 
   screen = tigrWindow(320, 240, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
