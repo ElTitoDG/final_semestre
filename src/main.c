@@ -13,10 +13,6 @@ int main(int argc, char *argv[]) {
     tigrError(0, "No se puede cargar player.png");
   }
 
-  char *greeting = (char *)tigrReadFile("greeting.txt", 0);
-  if (!greeting)
-    tigrError(0, "Cannot load greeting.txt");
-
   screen = tigrWindow(320, 240, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
 
