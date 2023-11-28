@@ -47,7 +47,7 @@ STD := -std=c2x
 #WARNS := -Wall -Wextra
 
 # Flags for compiling
-CFLAGS := -O3 $(STD) $(WARNS)
+CFLAGS := -O3 $(STD) $(WARNS) $(DEBUG)
 
 # Debug options
 DEBUG := -g3 -DDEBUG=1
