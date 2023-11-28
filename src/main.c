@@ -4,7 +4,13 @@ int main(int argc, char *argv[]) {
 
   // Base Variable
 
+  float playerx = 160, playery = 200;
   Tigr *screen, *background, *player;
+
+  // Loads player
+  player = tigrLoadImage("player.png");
+  // if (!player)
+  //   tigrError(0, "Cannot load player.png");
 
   screen = tigrWindow(320, 240, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
@@ -22,6 +28,10 @@ int main(int argc, char *argv[]) {
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
     // compose the background
     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
+
+    // compose player to background
+    tigrBlitAlpha(screen, player, (int)playerx - player->w / 2,
+                  (int)playery - player->h, 0, 0, player->w, player->h, 1.0f);
     // Update screen input
     tigrUpdate(screen);
   }
