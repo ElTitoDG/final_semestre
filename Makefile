@@ -47,21 +47,23 @@ STD := -std=c2x
 #WARNS := -Wall -Wextra
 
 # Flags for compiling
-CFLAGS := -O3 $(STD) $(WARNS) $(DEBUG)
+CFLAGS += -I../..
+
+
+ifeq ($(OS),Windows_NT)
+	LDFLAGS += -s -lopengl32 -lgdi32
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+		LDFLAGS += -framework OpenGL -framework Cocoa
+	else ifeq ($(UNAME_S),Linux)
+		LDFLAGS += -s -lGLU -lGL -lX1
+	endif
+endif
+
 
 # Debug options
 DEBUG := -g3 -DDEBUG=1
-
-# Libs dependency
-ifeq ($(OS), Darwin)
-	LIBS := -framework OpenGL -framework Cocoa -lm
-else
-	LIBS := -lGLU -lGL -lX11
-endif
-
-# %.o file names
-NAMES := $(notdir $(basename $(wildcard $(SRCDIR)/*.$(SRCEXT))))
-OBJECTS :=$(patsubst %,$(LIBDIR)/%.o,$(NAMES))
 
 
 #
@@ -84,19 +86,11 @@ help:
 	@echo "    clean    - Clean the project by removing binaries"
 	@echo "    help     - Prints a help message with target rules"
 	@echo
+	
 
-# Rule for link and generate the binary file
-all: $(OBJECTS)
-# @echo -en "$(BROWN)LD$(END_COLOR)";
-	$(CC) -o $(BINDIR)/$(BINARY) $+ $(CFLAGS) $(LIBS)
-	@echo "\nBinary file placed at" \
-			  "$(BROWN)$(BINDIR)/$(BINARY)$(END_COLOR)\n";
+all: src/main.c src/tigr.c
+	clang $^ -Os -o bin/game $(CFLAGS) $(LDFLAGS)
 
-
-# Rule for object bineries
-$(LIBDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
-# @echo -en "$(BROWN)CC$(END_COLOR)"
-	$(CC) -c $^ -o $@ $(CFLAGS) 
 
 # Run the binary files
 run: $(BINDIR)/$(BINARY)
