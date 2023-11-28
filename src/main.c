@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
   Tigr *window, *background, *player;
 
   // Loads player image and checks
-  player = tigrLoadImage("../resources/player.png");
+  player = tigrLoadImage("player.png");
   if (!player)
     tigrError(0, "Cannot load player");
 

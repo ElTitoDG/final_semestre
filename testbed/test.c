@@ -59,7 +59,7 @@ void update(float dt) {
 }
 
 int main(int argc, char *argv[]) {
-  Tigr *squinkle = tigrLoadImage("squinkle.png");
+  Tigr *squinkle = tigrLoadImage("player.png");
   if (!squinkle)
     tigrError(0, "Cannot load squinkle.png");
 
