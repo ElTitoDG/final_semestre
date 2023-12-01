@@ -53,7 +53,7 @@ else
 	ifeq ($(UNAME_S),Darwin)
 		LDFLAGS += -framework OpenGL -framework Cocoa
 	else ifeq ($(UNAME_S),Linux)
-		LDFLAGS += -s -lGLU -lGL -lX1
+		LDFLAGS += -s -lGLU -lGL -lX11
 	endif
 
 endif
