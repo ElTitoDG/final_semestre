@@ -1,10 +1,16 @@
+#include "core.h"
 #include "tigr.h"
+
+void update(float *dt, float *remaining, Tigr *screen, float *playerx,
+            float *playery, float *playerxs, float *playerys);
 
 int main(int argc, char *argv[]) {
 
   // Base Variable
 
-  float playerx = 160, playery = 200;
+  float playerx = 320.0 / 2, playery = 240.0 / 2;
+  float remaining;
+  float playerxs = 0, playerys = 0;
   Tigr *screen, *background, *player;
 
   // Loads player
@@ -12,22 +18,26 @@ int main(int argc, char *argv[]) {
   if (!player) {
     tigrError(0, "No se puede cargar player.png");
   }
-  
-  //Crea ventana
+
+  // Crea ventana
   screen = tigrWindow(320, 240, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
 
   // Main background
   tigrClear(background, tigrRGB(80, 180, 255));
   // Green grass
-  tigrFill(background, 0, 200, 320, 40, tigrRGB(60, 120, 60));
-  // Black border
-  tigrFill(background, 0, 200, 320, 3, tigrRGB(0, 0, 0));
-  // White line
-  tigrLine(background, 0, 201, 320, 201, tigrRGB(255, 255, 255));
+  // tigrFill(background, 0, 200, 320, 40, tigrRGB(60, 120, 60));
+  // // Black border
+  // tigrFill(background, 0, 200, 320, 3, tigrRGB(0, 0, 0));
+  // // White line
+  // tigrLine(background, 0, 201, 320, 201, tigrRGB(255, 255, 255));
 
   // Main Loop
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
+
+    float dt = tigrTime();
+    update(&dt, &remaining, screen, &playerx, &playery, &playerxs, &playerys);
+
     // compose the background
     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
 
