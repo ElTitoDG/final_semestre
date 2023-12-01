@@ -26,11 +26,11 @@ int main(int argc, char *argv[]) {
   // Main background
   tigrClear(background, tigrRGB(80, 180, 255));
   // Green grass
-  tigrFill(background, 0, 200, 320, 40, tigrRGB(60, 120, 60));
-  // Black border
-  tigrFill(background, 0, 200, 320, 3, tigrRGB(0, 0, 0));
-  // White line
-  tigrLine(background, 0, 201, 320, 201, tigrRGB(255, 255, 255));
+  // tigrFill(background, 0, 200, 320, 40, tigrRGB(60, 120, 60));
+  // // Black border
+  // tigrFill(background, 0, 200, 320, 3, tigrRGB(0, 0, 0));
+  // // White line
+  // tigrLine(background, 0, 201, 320, 201, tigrRGB(255, 255, 255));
 
   // Main Loop
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
