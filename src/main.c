@@ -12,7 +12,8 @@ int main(int argc, char *argv[]) {
   if (!player) {
     tigrError(0, "No se puede cargar player.png");
   }
-
+  
+  //Crea ventana
   screen = tigrWindow(320, 240, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
 
