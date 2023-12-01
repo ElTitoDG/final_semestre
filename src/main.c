@@ -1,5 +1,6 @@
 #include "core.h"
 #include "tigr.h"
+#include <stdio.h>
 
 void update(float *dt, float *remaining, Tigr *screen, float *playerx,
             float *playery, float *playerxs, float *playerys);
@@ -9,7 +10,7 @@ int main(int argc, char *argv[]) {
   // Base Variable
 
   float playerx = 320.0 / 2, playery = 240.0 / 2;
-  float remaining;
+  float remaining, dt;
   float playerxs = 0, playerys = 0;
   Tigr *screen, *background, *player;
 
@@ -35,7 +36,7 @@ int main(int argc, char *argv[]) {
   // Main Loop
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
 
-    float dt = tigrTime();
+    dt = tigrTime();
     update(&dt, &remaining, screen, &playerx, &playery, &playerxs, &playerys);
 
     // compose the background
@@ -47,6 +48,8 @@ int main(int argc, char *argv[]) {
     // Update screen input
     tigrUpdate(screen);
   }
+
+  printf("Time %f\n", dt);
   tigrFree(screen);
   return 0;
 }
