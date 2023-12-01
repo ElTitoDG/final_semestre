@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   Tigr *screen, *background, *player;
 
   // Loads player
-  player = tigrLoadImage("player.png");
+  player = tigrLoadImage("res/player.png");
   if (!player) {
     tigrError(0, "No se puede cargar player.png");
   }
