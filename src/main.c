@@ -7,15 +7,14 @@ void update(float *dt, float *remaining, Tigr *screen, float *playerx,
 
 int main(int argc, char *argv[]) {
 
-  // Base Variable
-
+  // Variables básicas
   float playerx = 320.0 / 2, playery = 240.0 / 2;
   float remaining, dt;
   float playerxs = 0, playerys = 0;
   Tigr *screen, *background, *player;
 
-  // Loads player
-  player = tigrLoadImage("res/player.png");
+  // Carga el sprite del jugador
+  player = tigrLoadImage("res/enemy.png");
   if (!player) {
     tigrError(0, "No se puede cargar player.png");
   }

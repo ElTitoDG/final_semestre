@@ -20,15 +20,18 @@ void update(float *dt, float *remaining, Tigr *screen, float *playerx,
   if (tigrKeyHeld(screen, TK_LEFT) || tigrKeyHeld(screen, 'D'))
     *playerxs += 10;
 
+  // Actualización de posiciones
   float oldx = *playerx, oldy = *playery;
   *playerx += *dt * *playerxs;
   *playery += *dt * *playerys;
 
+  // Algoritmo de suavizado exponencial para reducir velocidades gradualmente
   *playerxs *= exp(-10.0f * *dt);
   *playerys *= exp(-10.0f * *dt);
   *playerx += *dt * *playerxs;
   *playery += *dt * *playerys;
 
+  // Restricciones de los bordes de la ventana
   if (*playerx < 8) {
     *playerx = 8;
     *playerxs = 0;
@@ -39,13 +42,13 @@ void update(float *dt, float *remaining, Tigr *screen, float *playerx,
     *playerxs = 0;
   }
 
-  if (*playery < 8) {
-    *playery = 8;
+  if (*playery < 20) {
+    *playery = 20;
     *playerys = 0;
   }
 
-  if (*playery > screen->h - 8) {
-    *playery = screen->h - 8.0f;
+  if (*playery > screen->h - 1) {
+    *playery = screen->h - 1.0f;
     *playerys = 0;
   }
 }
