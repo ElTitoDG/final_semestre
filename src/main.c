@@ -1,10 +1,16 @@
+#include "core.h"
 #include "tigr.h"
+
+void update(float *dt, float *remaining, Tigr *screen, float *playerx,
+            float *playery, float *playerxs, float *playerys);
 
 int main(int argc, char *argv[]) {
 
   // Base Variable
 
   float playerx = 160, playery = 200;
+  float remaining;
+  float playerxs = 0, playerys = 0;
   Tigr *screen, *background, *player;
 
   // Loads player
@@ -12,8 +18,8 @@ int main(int argc, char *argv[]) {
   if (!player) {
     tigrError(0, "No se puede cargar player.png");
   }
-  
-  //Crea ventana
+
+  // Crea ventana
   screen = tigrWindow(320, 240, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
 
@@ -28,6 +34,10 @@ int main(int argc, char *argv[]) {
 
   // Main Loop
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
+
+    float dt = tigrTime();
+    update(&dt, &remaining, screen, &playerx, &playery, &playerxs, &playerys);
+
     // compose the background
     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
 
