@@ -8,19 +8,24 @@ void update(float *dt, float *remaining, Tigr *screen, float *playerx,
   if (*remaining > 0)
     *remaining -= *dt;
 
-  if (tigrKeyHeld(screen, TK_UP) && tigrKeyDown(screen, 'W'))
-    playerys -= 10;
+  // Movimiento Vertical
+  if (tigrKeyHeld(screen, TK_UP) || tigrKeyHeld(screen, 'W'))
+    *playerys -= 10;
+  if (tigrKeyHeld(screen, TK_DOWN) || tigrKeyHeld(screen, 'S'))
+    *playerys += 10;
 
+  // Movimiento Lateral
   if (tigrKeyHeld(screen, TK_LEFT) || tigrKeyHeld(screen, 'A'))
     *playerxs -= 10;
-
   if (tigrKeyHeld(screen, TK_LEFT) || tigrKeyHeld(screen, 'D'))
     *playerxs += 10;
 
   float oldx = *playerx, oldy = *playery;
+  *playerx += *dt * *playerxs;
+  *playery += *dt * *playerys;
 
-  *playerxs *= exp(-5.0f * *dt);
-  *playerys *= exp(-5.0f * *dt);
+  *playerxs *= exp(-10.0f * *dt);
+  *playerys *= exp(-10.0f * *dt);
   *playerx += *dt * *playerxs;
   *playery += *dt * *playerys;
 
@@ -34,6 +39,13 @@ void update(float *dt, float *remaining, Tigr *screen, float *playerx,
     *playerxs = 0;
   }
 
-  float dx = (*playerx - oldx) / 10;
-  float dy = (*playery - oldy) / 10;
+  if (*playery < 8) {
+    *playery = 8;
+    *playerys = 0;
+  }
+
+  if (*playery > screen->h - 8) {
+    *playery = screen->h - 8.0f;
+    *playerys = 0;
+  }
 }

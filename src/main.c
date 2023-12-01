@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
 
   // Base Variable
 
-  float playerx = 160, playery = 200;
+  float playerx = 320.0 / 2, playery = 240.0 / 2;
   float remaining;
   float playerxs = 0, playerys = 0;
   Tigr *screen, *background, *player;
