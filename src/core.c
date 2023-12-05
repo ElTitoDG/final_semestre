@@ -17,7 +17,7 @@ void update(float *dt, float *remaining, Tigr *screen, float *playerx,
   // Movimiento Lateral
   if (tigrKeyHeld(screen, TK_LEFT) || tigrKeyHeld(screen, 'A'))
     *playerxs -= 10;
-  if (tigrKeyHeld(screen, TK_LEFT) || tigrKeyHeld(screen, 'D'))
+  if (tigrKeyHeld(screen, TK_RIGHT) || tigrKeyHeld(screen, 'D'))
     *playerxs += 10;
 
   // Actualización de posiciones
