@@ -10,5 +10,5 @@ else
 	endif
 endif
 
-demo : test.c ../src/tigr.c
+demo : test2.c ../src/tigr.c
 	clang $^ -Os -o $@ $(CFLAGS) $(LDFLAGS)
