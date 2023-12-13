@@ -1,54 +1,42 @@
 #include "core.h"
 #include "tigr.h"
-#include <math.h>
 
-void update(float *dt, float *remaining, Tigr *screen, float *playerx,
-            float *playery, float *playerxs, float *playerys) {
+#define PLAYER_WIDTH 23
+#define PLAYER_HEIGTH 22
 
-  if (*remaining > 0)
-    *remaining -= *dt;
+typedef struct {
+  float x, y, speed;
+} TPlayer;
 
-  // Movimiento Vertical
-  if (tigrKeyHeld(screen, TK_UP) || tigrKeyHeld(screen, 'W'))
-    *playerys -= 10;
-  if (tigrKeyHeld(screen, TK_DOWN) || tigrKeyHeld(screen, 'S'))
-    *playerys += 10;
+typedef struct {
+  float x, y, speed;
+  int active;
+} TProjectile;
 
-  // Movimiento Lateral
-  if (tigrKeyHeld(screen, TK_LEFT) || tigrKeyHeld(screen, 'A'))
-    *playerxs -= 10;
-  if (tigrKeyHeld(screen, TK_RIGHT) || tigrKeyHeld(screen, 'D'))
-    *playerxs += 10;
+void updatePlayer(TPlayer *player, Tigr *screen) {
+  if (tigrKeyHeld(screen, 'A'))
+    player->x -= player->speed;
+  if (tigrKeyHeld(screen, 'D'))
+    player->x += player->speed;
+  if (tigrKeyHeld(screen, 'W'))
+    player->y -= player->speed;
+  if (tigrKeyHeld(screen, 'S'))
+    player->y += player->speed;
+}
 
-  // Actualización de posiciones
-  float oldx = *playerx, oldy = *playery;
-  *playerx += *dt * *playerxs;
-  *playery += *dt * *playerys;
+void drawPlayer(TPlayer *player, Tigr *screen) {
 
-  // Algoritmo de suavizado exponencial para reducir velocidades gradualmente
-  *playerxs *= exp(-10.0f * *dt);
-  *playerys *= exp(-10.0f * *dt);
-  *playerx += *dt * *playerxs;
-  *playery += *dt * *playerys;
+  Tigr *player_image;
 
-  // Restricciones de los bordes de la ventana
-  if (*playerx < 8) {
-    *playerx = 8;
-    *playerxs = 0;
+  player_image = tigrLoadImage("res/player.png");
+  if (!player) {
+    tigrError(0, "No se puede cargar player.png");
   }
 
-  if (*playerx > screen->w - 8) {
-    *playerx = screen->w - 8.0f;
-    *playerxs = 0;
-  }
+  tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGTH,
+           tigrRGB(255, 255, 255));
 
-  if (*playery < 20) {
-    *playery = 20;
-    *playerys = 0;
-  }
-
-  if (*playery > screen->h - 1) {
-    *playery = screen->h - 1.0f;
-    *playerys = 0;
-  }
+  tigrBlitAlpha(screen, player_image, player->x - (float)PLAYER_WIDTH / 2,
+                player->y - (float)PLAYER_HEIGTH, 0, 0, (float)PLAYER_WIDTH,
+                (float)PLAYER_HEIGTH, 1.0f);
 }

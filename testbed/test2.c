@@ -41,8 +41,20 @@ void updateProjectiles(Projectile projectiles[], Tigr *screen) {
 }
 
 void drawPlayer(Player *player, Tigr *screen) {
+
+  Tigr *player_image;
+
+  player_image = tigrLoadImage("player.png");
+  if (!player) {
+    tigrError(0, "No se puede cargar player.png");
+  }
+
   tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
            tigrRGB(255, 255, 255));
+
+  tigrBlitAlpha(screen, player_image, player->x - (float)PLAYER_WIDTH / 2,
+                player->y - (float)PLAYER_HEIGHT, 0, 0, (float)PLAYER_WIDTH,
+                (float)PLAYER_HEIGHT, 1.0f);
 }
 
 void drawProjectiles(Projectile projectiles[], Tigr *screen) {
