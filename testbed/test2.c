@@ -65,7 +65,7 @@ int main() {
     projectiles[i].active = 0;
   }
 
-  while (!tigrClosed(screen)) {
+  while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
     tigrClear(screen, tigrRGB(0, 0, 0));
 
     updatePlayer(&player, screen);

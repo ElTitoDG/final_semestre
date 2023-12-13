@@ -2,6 +2,9 @@
 #include "tigr.h"
 #include <stdio.h>
 
+#define SCREEN_WIDTH 440
+#define SCREEN_HEIGTH 320
+
 void update(float *dt, float *remaining, Tigr *screen, float *playerx,
             float *playery, float *playerxs, float *playerys);
 
@@ -20,7 +23,7 @@ int main(int argc, char *argv[]) {
   }
 
   // Crea ventana
-  screen = tigrWindow(320, 240, "Game 1", 0);
+  screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGTH, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
 
   // Main background
