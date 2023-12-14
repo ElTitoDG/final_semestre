@@ -1,4 +1,5 @@
 #include "core.h"
+#include "shoot.h"
 #include "tigr.h"
 
 #define SCREEN_WIDTH 440
@@ -6,14 +7,18 @@
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
 
-typedef struct Tplayer {
+typedef struct {
   float x, y, speed;
 } TPlayer;
 
-typedef struct TProjectile {
+typedef struct {
   float x, y, speed;
   int active;
 } TProjectile;
+
+void updateProjectiles(TProjectile projectiles[], Tigr *screen);
+
+void drawProjectiles(TProjectile projectiles[], Tigr *screen);
 
 void updatePlayer(TPlayer *player, Tigr *screen) {
   if (tigrKeyHeld(screen, 'A')) {

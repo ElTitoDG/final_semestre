@@ -32,10 +32,10 @@ void updatePlayer(Player *player, Tigr *screen) {
 void updateProjectiles(Projectile projectiles[], Tigr *screen) {
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     if (projectiles[i].active) {
+      
       projectiles[i].y -= projectiles[i].speed;
-      if (projectiles[i].y < 0) {
+      if (projectiles[i].y < 0)
         projectiles[i].active = 0;
-      }
     }
   }
 }

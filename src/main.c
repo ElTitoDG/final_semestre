@@ -6,6 +6,7 @@
 #define SCREEN_HEIGHT 320
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
+#define PROJECTILE_SIZE 5
 
 typedef struct {
   float x, y, speed;
@@ -21,6 +22,9 @@ typedef struct {
 
 void updatePlayer(TPlayer *player, Tigr *screen);
 void drawPlayer(TPlayer *player, Tigr *screen);
+void updateProjectiles(TProjectile projectiles[], Tigr *screen);
+
+void drawProjectiles(TProjectile projectiles[], Tigr *screen);
 
 int main(int argc, char *argv[]) {
 
@@ -43,6 +47,12 @@ int main(int argc, char *argv[]) {
   TPlayer player = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
                     5.0f};
 
+  TProjectile projectiles[PROJECTILE_SIZE];
+
+  for (int i = 0; i < PROJECTILE_SIZE; ++i) {
+    projectiles[i].active = 0;
+  }
+
   // Main background
   tigrClear(background, tigrRGB(80, 180, 255));
   // Green grass
@@ -59,11 +69,26 @@ int main(int argc, char *argv[]) {
     // update(&dt, &remaining, screen, &playerx, &playery, &playerxs,
     // &playerys);
     updatePlayer(&player, screen);
+    updateProjectiles(projectiles, screen);
+
+    if (tigrKeyHeld(screen, 'Z')) {
+      for (int i = 0; i < PROJECTILE_SIZE; ++i) {
+        if (!projectiles[i].active) {
+          projectiles[i].x =
+              player.x + PLAYER_WIDTH / 2.0f - PROJECTILE_SIZE / 2.0f;
+          projectiles[i].y = player.y;
+          projectiles[i].speed = 8.0f;
+          projectiles[i].active = 1;
+          break;
+        }
+      }
+    }
 
     // compose the background
     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
 
     drawPlayer(&player, screen);
+    drawProjectiles(projectiles, screen);
     // compose player to background
     // tigrBlitAlpha(screen, player, (int)playerx - player->w / 2,
     //               (int)playery - player->h, 0, 0, player->w,

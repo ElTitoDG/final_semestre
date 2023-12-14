@@ -14,6 +14,5 @@ typedef struct {
 //             float *playery, float *playerxs, float *playerys);
 
 void updatePlayer(TPlayer *player, Tigr *screen);
-
 void drawPlayer(TPlayer *player, Tigr *screen);
 #endif // CORE_H
