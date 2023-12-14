@@ -1,48 +1,36 @@
 #include "core.h"
 #include "tigr.h"
 
+#define SCREEN_WIDTH 440
+#define SCREEN_HEIGHT 320
 #define PLAYER_WIDTH 23
-#define PLAYER_HEIGTH 22
+#define PLAYER_HEIGHT 22
 
-typedef struct {
+typedef struct Tplayer {
   float x, y, speed;
 } TPlayer;
 
-typedef struct {
+typedef struct TProjectile {
   float x, y, speed;
   int active;
 } TProjectile;
 
 void updatePlayer(TPlayer *player, Tigr *screen) {
-  if (tigrKeyHeld(screen, 'A'))
+  if (tigrKeyHeld(screen, 'A')) {
     player->x -= player->speed;
-  if (tigrKeyHeld(screen, 'D'))
+  }
+  if (tigrKeyHeld(screen, 'D')) {
     player->x += player->speed;
-  if (tigrKeyHeld(screen, 'W'))
+  }
+  if (tigrKeyHeld(screen, 'W')) {
     player->y -= player->speed;
-  if (tigrKeyHeld(screen, 'S'))
+  }
+  if (tigrKeyHeld(screen, 'S')) {
     player->y += player->speed;
-
-  // Restricciones de los bordes de la ventana
-  if (player->x < 8) {
-    player->x = 8;
-    player->speed = 0;
   }
 
-  if (player->x > screen->w - 8) {
-    player->x = screen->w - 8.0f;
-    player->speed = 0;
-  }
-
-  if (player->y < 23) {
-    player->y = 23;
-    player->speed = 0;
-  }
-
-  if (player->y > screen->h - 1) {
-    player->y = screen->h - 1.0f;
-    player->speed = 0;
-  }
+  player->x = ((int)player->x + screen->w) % screen->w;
+  player->y = ((int)player->y + screen->h) % screen->h;
 }
 
 void drawPlayer(TPlayer *player, Tigr *screen) {
@@ -54,10 +42,9 @@ void drawPlayer(TPlayer *player, Tigr *screen) {
     tigrError(0, "No se puede cargar player.png");
   }
 
-  // tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGTH,
-  //          tigrRGB(255, 255, 255));
+  tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
+           tigrRGB(255, 255, 255));
 
-  tigrBlitAlpha(screen, player_image, player->x - (float)PLAYER_WIDTH / 2,
-                player->y - (float)PLAYER_HEIGTH, 0, 0, (float)PLAYER_WIDTH,
-                (float)PLAYER_HEIGTH, 1.0f);
+  tigrBlitAlpha(screen, player_image, player->x, player->y, 0, (float)1.9,
+                (float)PLAYER_WIDTH, (float)PLAYER_HEIGHT, 1.0f);
 }

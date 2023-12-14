@@ -2,9 +2,9 @@
 #include "tigr.h"
 #include <stdio.h>
 
-#define SCREEN_WIDHT 440
+#define SCREEN_WIDTH 440
 #define SCREEN_HEIGHT 320
-#define PLAYER_WIDHT 23
+#define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
 
 typedef struct {
@@ -37,10 +37,10 @@ int main(int argc, char *argv[]) {
   // }
 
   // Crea ventana
-  screen = tigrWindow(SCREEN_WIDHT, SCREEN_HEIGHT, "Game 1", 0);
+  screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
 
-  TPlayer player = {SCREEN_WIDHT / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
+  TPlayer player = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
                     5.0f};
 
   // Main background
