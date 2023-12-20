@@ -27,8 +27,7 @@ END_COLOR =\$(COLOR_PREFIX)[0m
 # Source code directory
 BINDIR := bin
 SRCDIR := src
-LOGDIR := log
-LIBDIR := lib
+
 
 # Source code file extension
 SRCEXT := c
@@ -71,16 +70,18 @@ help:
 	@echo "$(BLUE)Projecto Final Semestre$(END_COLOR)"
 	@echo
 	@echo "Target rules:"
-	@echo "    all      - Compiles and generates binary file"
+	@echo "    all      - Set up project and compiles"
+	@echo "    cc    	- Compiles and generates binary file"
 	@echo "    run      - Run the current binary file"
 	@echo "    dirs     - Creates all the required dirs"
-#	@echo "    tests    - Compiles with cmocka and run tests binary file"
 	@echo "    clean    - Clean the project by removing binaries"
 	@echo "    help     - Prints a help message with target rules"
 	@echo
 	
 
-all : *.$(SRCEXT)
+all: dirs cc
+
+cc : *.$(SRCEXT)
 	$(CC) $^ -Os -o ../$(BINDIR)/$(BINARY) $(CFLAGS) $(LDFLAGS)
 	@echo "\nBinary file placed at" \
 		"$(BROWN)$(BINDIR)/$(BINARY)$(END_COLOR)\n";
