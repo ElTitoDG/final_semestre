@@ -32,17 +32,29 @@ void updatePlayer(Player *player, Tigr *screen) {
 void updateProjectiles(Projectile projectiles[], Tigr *screen) {
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     if (projectiles[i].active) {
+      
       projectiles[i].y -= projectiles[i].speed;
-      if (projectiles[i].y < 0) {
+      if (projectiles[i].y < 0)
         projectiles[i].active = 0;
-      }
     }
   }
 }
 
 void drawPlayer(Player *player, Tigr *screen) {
+
+  Tigr *player_image;
+
+  player_image = tigrLoadImage("player.png");
+  if (!player) {
+    tigrError(0, "No se puede cargar player.png");
+  }
+
   tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
            tigrRGB(255, 255, 255));
+
+  tigrBlitAlpha(screen, player_image, player->x - (float)PLAYER_WIDTH / 2,
+                player->y - (float)PLAYER_HEIGHT, 0, 0, (float)PLAYER_WIDTH,
+                (float)PLAYER_HEIGHT, 1.0f);
 }
 
 void drawProjectiles(Projectile projectiles[], Tigr *screen) {
@@ -56,6 +68,7 @@ void drawProjectiles(Projectile projectiles[], Tigr *screen) {
 
 int main() {
   Tigr *screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Game", 0);
+  Tigr *background;
 
   Player player = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
                    5.0f};
@@ -64,6 +77,8 @@ int main() {
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     projectiles[i].active = 0;
   }
+
+  tigrClear(background, tigrRGB(80, 180, 255));
 
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
     tigrClear(screen, tigrRGB(0, 0, 0));
@@ -83,6 +98,9 @@ int main() {
         }
       }
     }
+
+/*     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
+ */    
 
     drawPlayer(&player, screen);
     drawProjectiles(projectiles, screen);
