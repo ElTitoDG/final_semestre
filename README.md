@@ -25,7 +25,8 @@ El archivo makefile sirve para simplificar el proceso a la hora de compilar cual
 
 Si se invoca el comando `make help` se mostrara todos los comandos disponibles pero en este caso solo nos importara el comando `make all` y el `make run`, los cuales compilaran el proyecto y lo correran.
 
-## Información extra
+
+## Extra
 
 Para encontrar más información sobre la base de codigo ver este [archivo](wiki/TIGR.md)
 
