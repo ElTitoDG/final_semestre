@@ -14,4 +14,6 @@ void updateProjectiles(TProjectile projectiles[], Tigr *screen);
 
 void drawProjectiles(TProjectile projectiles[], Tigr *screen);
 
+void shoot(TProjectile projectiles[], TPlayer player, Tigr *screen);
+
 #endif // SHOOT_H
