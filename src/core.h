@@ -1,8 +1,18 @@
-#include "tigr.h"
-#ifdef __CORE_H__
-#define __CORE_H__
+#ifdef CORE_H
+#define CORE_H
 
-void update(float *dt, float *remaining, Tigr *screen, float *playerx,
-            float *playery, float *playerxs, float *playerys);
+typedef struct Tplayer {
+  float x, y, speed;
+} TPlayer;
 
-#endif // DEBUG
+typedef struct {
+  float x, y, speed;
+  int active;
+} TProjectile;
+
+// void update(float *dt, float *remaining, Tigr *screen, float *playerx,
+//             float *playery, float *playerxs, float *playerys);
+
+void updatePlayer(TPlayer *player, Tigr *screen);
+void drawPlayer(TPlayer *player, Tigr *screen);
+#endif // CORE_H
