@@ -68,6 +68,7 @@ void drawProjectiles(Projectile projectiles[], Tigr *screen) {
 
 int main() {
   Tigr *screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Game", 0);
+  Tigr *background;
 
   Player player = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
                    5.0f};
@@ -76,6 +77,8 @@ int main() {
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     projectiles[i].active = 0;
   }
+
+  tigrClear(background, tigrRGB(80, 180, 255));
 
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
     tigrClear(screen, tigrRGB(0, 0, 0));
@@ -95,6 +98,9 @@ int main() {
         }
       }
     }
+
+/*     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
+ */    
 
     drawPlayer(&player, screen);
     drawProjectiles(projectiles, screen);

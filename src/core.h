@@ -1,7 +1,7 @@
 #ifdef CORE_H
 #define CORE_H
 
-typedef struct {
+typedef struct Tplayer {
   float x, y, speed;
 } TPlayer;
 

@@ -2,24 +2,19 @@
 #include "shoot.h"
 #include "tigr.h"
 
+// Macros necesarias
 #define SCREEN_WIDTH 440
 #define SCREEN_HEIGHT 320
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
 
-typedef struct {
+
+// Tipo de dato que define al jugador
+typedef struct Tplayer {
   float x, y, speed;
 } TPlayer;
 
-typedef struct {
-  float x, y, speed;
-  int active;
-} TProjectile;
-
-void updateProjectiles(TProjectile projectiles[], Tigr *screen);
-
-void drawProjectiles(TProjectile projectiles[], Tigr *screen);
-
+// Función encargada de gestionar el movimiento y colisiones del personajes
 void updatePlayer(TPlayer *player, Tigr *screen) {
   if (tigrKeyHeld(screen, 'A')) {
     player->x -= player->speed;
@@ -38,6 +33,7 @@ void updatePlayer(TPlayer *player, Tigr *screen) {
   player->y = ((int)player->y + screen->h) % screen->h;
 }
 
+// Función encargada de cargar la imagen del personaje
 void drawPlayer(TPlayer *player, Tigr *screen) {
 
   Tigr *player_image;
@@ -47,8 +43,13 @@ void drawPlayer(TPlayer *player, Tigr *screen) {
     tigrError(0, "No se puede cargar player.png");
   }
 
-  tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
+  // Debug collision box
+  if (tigrKeyHeld(screen, 'F'))
+   tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
            tigrRGB(255, 255, 255));
+  else
+    tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
+            tigrRGB(80, 180, 255));
 
   tigrBlitAlpha(screen, player_image, player->x, player->y, 0, (float)1.9,
                 (float)PLAYER_WIDTH, (float)PLAYER_HEIGHT, 1.0f);

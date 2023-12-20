@@ -1,12 +1,15 @@
 #include "../src/tigr.h"
 #include <math.h>
 
+// region: --- Global Variables
 float playerx = 160, playery = 200;
 float playerxs = 0, playerys = 0;
 int standing = 1;
 float remaining = 0;
 Tigr *backdrop, *screen;
+// endregion: --- Global Variables
 
+// region: --- Modules
 void update(float dt) {
   if (remaining > 0)
     remaining -= dt;
@@ -57,6 +60,7 @@ void update(float dt) {
   playerx = oldx;
   playery = oldy;
 }
+// endregion: --- Modules
 
 int main(int argc, char *argv[]) {
   Tigr *squinkle = tigrLoadImage("player.png");
