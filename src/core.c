@@ -1,56 +1,54 @@
 #include "core.h"
-#include "shoot.h"
 #include "tigr.h"
+#include <math.h>
 
-// Macros necesarias
-#define SCREEN_WIDTH 440
-#define SCREEN_HEIGHT 320
-#define PLAYER_WIDTH 23
-#define PLAYER_HEIGHT 22
+void update(float *dt, float *remaining, Tigr *screen, float *playerx,
+            float *playery, float *playerxs, float *playerys) {
 
+  if (*remaining > 0)
+    *remaining -= *dt;
 
-// Tipo de dato que define al jugador
-typedef struct Tplayer {
-  float x, y, speed;
-} TPlayer;
+  // Movimiento Vertical
+  if (tigrKeyHeld(screen, TK_UP) || tigrKeyHeld(screen, 'W'))
+    *playerys -= 10;
+  if (tigrKeyHeld(screen, TK_DOWN) || tigrKeyHeld(screen, 'S'))
+    *playerys += 10;
 
-// Función encargada de gestionar el movimiento y colisiones del personajes
-void updatePlayer(TPlayer *player, Tigr *screen) {
-  if (tigrKeyHeld(screen, 'A')) {
-    player->x -= player->speed;
-  }
-  if (tigrKeyHeld(screen, 'D')) {
-    player->x += player->speed;
-  }
-  if (tigrKeyHeld(screen, 'W')) {
-    player->y -= player->speed;
-  }
-  if (tigrKeyHeld(screen, 'S')) {
-    player->y += player->speed;
-  }
+  // Movimiento Lateral
+  if (tigrKeyHeld(screen, TK_LEFT) || tigrKeyHeld(screen, 'A'))
+    *playerxs -= 10;
+  if (tigrKeyHeld(screen, TK_RIGHT) || tigrKeyHeld(screen, 'D'))
+    *playerxs += 10;
 
-  player->x = ((int)player->x + screen->w) % screen->w;
-  player->y = ((int)player->y + screen->h) % screen->h;
-}
+  // Actualización de posiciones
+  float oldx = *playerx, oldy = *playery;
+  *playerx += *dt * *playerxs;
+  *playery += *dt * *playerys;
 
-// Función encargada de cargar la imagen del personaje
-void drawPlayer(TPlayer *player, Tigr *screen) {
+  // Algoritmo de suavizado exponencial para reducir velocidades gradualmente
+  *playerxs *= exp(-10.0f * *dt);
+  *playerys *= exp(-10.0f * *dt);
+  *playerx += *dt * *playerxs;
+  *playery += *dt * *playerys;
 
-  Tigr *player_image;
-
-  player_image = tigrLoadImage("res/player.png");
-  if (!player) {
-    tigrError(0, "No se puede cargar player.png");
+  // Restricciones de los bordes de la ventana
+  if (*playerx < 8) {
+    *playerx = 8;
+    *playerxs = 0;
   }
 
-  // Debug collision box
-  if (tigrKeyHeld(screen, 'F'))
-   tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
-           tigrRGB(255, 255, 255));
-  else
-    tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
-            tigrRGB(80, 180, 255));
+  if (*playerx > screen->w - 8) {
+    *playerx = screen->w - 8.0f;
+    *playerxs = 0;
+  }
 
-  tigrBlitAlpha(screen, player_image, player->x, player->y, 0, (float)1.9,
-                (float)PLAYER_WIDTH, (float)PLAYER_HEIGHT, 1.0f);
+  if (*playery < 20) {
+    *playery = 20;
+    *playerys = 0;
+  }
+
+  if (*playery > screen->h - 1) {
+    *playery = screen->h - 1.0f;
+    *playerys = 0;
+  }
 }
