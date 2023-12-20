@@ -93,9 +93,9 @@ run: ../$(BINDIR)/$(BINARY)
 
 # Rule for creating the required dirs
 dirs:
-	mkdir -p ../$(SRCDIR) ../$(BINDIR) ../$(LOGDIR) ../$(LIBDIR)
+	mkdir -p ../$(SRCDIR) ../$(BINDIR)
 
 
 # Rule for cleaning the project
 clean:
-	@rm -rvf ../$(BINDIR)/* ../$(LIBDIR)/* *.txt; #../$(LOGDIR)/*
+	@rm -rvf ../$(BINDIR)/* 
