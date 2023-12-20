@@ -9,7 +9,9 @@
 #define SCREEN_HEIGHT 320
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
+#define PLAYER_SPEED 5.0f
 #define PROJECTILE_SIZE 5
+#define PROJECTILE_SPEED 5.0f
 
 // Tipo de datos que definen al jugador
 typedef struct {

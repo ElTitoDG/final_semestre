@@ -6,7 +6,8 @@
 #define SCREEN_HEIGHT 320
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
-#define PROJECTILE_SIZE 5
+#define PLAYER_SPEED 5.0f
+#define PROJECTILE_SIZE 6
 #define PROJECTILE_SPEED 5.0f
 
 // Tipo de dato que define al proyectil
@@ -34,10 +35,19 @@ void updateProjectiles(TProjectile projectiles[], Tigr *screen) {
 
 // Función encargada que los proyectiles se dibujen en pantalla
 void drawProjectiles(TProjectile projectiles[], Tigr *screen) {
+  Tigr *bullet_image;
+
+  bullet_image = tigrLoadImage("res/bullet.png");
+  if (!projectiles) {
+    tigrError(0, "No se puede cargar bullet.png");
+  }
+
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     if (projectiles[i].active) {
-      tigrRect(screen, projectiles[i].x, projectiles[i].y, PROJECTILE_SIZE,
-               PROJECTILE_SIZE, tigrRGB(255, 0, 0));
+      /* tigrRect(screen, projectiles[i].x, projectiles[i].y, PROJECTILE_SIZE,
+               PROJECTILE_SIZE, tigrRGB(255, 0, 0)); */
+      tigrBlitAlpha(screen, bullet_image, projectiles->x, projectiles->y, 0, (float)1.9,
+                (float)PROJECTILE_SIZE, (float)PROJECTILE_SIZE, 1.0f);
     }
   }
 }

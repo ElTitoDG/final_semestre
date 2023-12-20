@@ -7,6 +7,9 @@
 #define SCREEN_HEIGHT 320
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
+#define PLAYER_SPEED 2.5f
+#define PROJECTILE_SIZE 5
+#define PROJECTILE_SPEED 5.0f
 
 
 // Tipo de dato que define al jugador
@@ -17,16 +20,16 @@ typedef struct Tplayer {
 // Función encargada de gestionar el movimiento y colisiones del personajes
 void updatePlayer(TPlayer *player, Tigr *screen) {
   if (tigrKeyHeld(screen, 'A')) {
-    player->x -= player->speed;
+    player->x -= player->speed = PLAYER_SPEED;
   }
   if (tigrKeyHeld(screen, 'D')) {
-    player->x += player->speed;
+    player->x += player->speed = PLAYER_SPEED;
   }
   if (tigrKeyHeld(screen, 'W')) {
-    player->y -= player->speed;
+    player->y -= player->speed = PLAYER_SPEED;
   }
   if (tigrKeyHeld(screen, 'S')) {
-    player->y += player->speed;
+    player->y += player->speed = PLAYER_SPEED;
   }
 
   player->x = ((int)player->x + screen->w) % screen->w;
@@ -39,7 +42,7 @@ void drawPlayer(TPlayer *player, Tigr *screen) {
   Tigr *player_image;
 
   player_image = tigrLoadImage("res/player.png");
-  if (!player) {
+  if (!player_image) {
     tigrError(0, "No se puede cargar player.png");
   }
 
