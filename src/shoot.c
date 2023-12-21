@@ -67,3 +67,4 @@ void shoot(TProjectile projectiles[], TPlayer player, Tigr *screen) {
         }
       }
 }
+

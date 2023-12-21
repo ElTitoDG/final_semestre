@@ -39,7 +39,7 @@ void shoot(TProjectile projectiles[], TPlayer player, Tigr *screen);
 void drawEnemy(TPlayer *enemy, Tigr *screen);
 void updateEnemy(TPlayer *enemy, Tigr *screen, float enemy_speed);
 void updateAndDrawEnemies(TPlayer enemies[], int num_enemies, Tigr *screen, float enemy_speed);
-
+void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed);
 
 
 int main(int argc, char *argv[]) 
@@ -103,6 +103,8 @@ int main(int argc, char *argv[])
     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
 
     updateAndDrawEnemies(enemies, 4, screen, 0.5);
+
+    shootUpdate(enemies, 4, projectiles, screen, 0.5);
 
     drawPlayer(&player, screen);
     /* drawEnemy(&enemy, screen);
