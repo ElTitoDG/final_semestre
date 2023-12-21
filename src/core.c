@@ -143,7 +143,7 @@ void updateAndDrawEnemies(TPlayer enemies[], int num_enemies, Tigr *screen, floa
     }
 }
 
-void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed) 
+/* void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed) 
 {
     for (int i = 0; i < num_enemies; ++i) {
         // Comprobar si algún proyectil activo ha golpeado a este enemigo
@@ -167,4 +167,4 @@ void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], 
             drawEnemy(&enemies[i], screen);
         }
     }
-}
+} */
