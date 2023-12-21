@@ -67,6 +67,7 @@ void drawProjectiles(Projectile projectiles[], Tigr *screen) {
 }
 
 int main() {
+  
   Tigr *screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Game", 0);
   Tigr *background;
 
