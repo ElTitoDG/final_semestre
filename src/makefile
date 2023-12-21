@@ -2,9 +2,12 @@
 #
 #
 #
-# Makefile for C code
-#
-#
+# Makefile para codigo de C
+# Autor: Julián Hinojosa Gil
+# Autor Original: Gustavo Pantuza Coelho Pinto
+# Since: 24.03.2016
+# Archivo creado a partir de la plantilla proporcionada por
+# el autor original y usada anteriormente en un proyecto
 #
 #
 
