@@ -33,6 +33,33 @@ void updatePlayer(Player *player, Tigr *screen) {
     player->y += player->speed;
 }
 
+void updateEnemy(Player *enemy, Tigr *screen)
+{
+
+  srand(time(NULL));
+  float enemyAngle= 1.0472;
+
+  // int enemySpeed = 4, enemyX = 320, enemyY = 240;
+
+  if (enemy->x - 10 < 0 || enemy->x + 10 > 640) {
+		enemyAngle = -enemyAngle;
+	}
+
+	if (enemy->y < -6) {
+			enemyAngle = PI - enemyAngle;
+	}
+
+  if (enemy->y > 354) {
+    enemyAngle = PI - enemyAngle;	
+		enemyAngle += ((float)(rand() - (RAND_MAX / 2)) / (float)RAND_MAX) / 20;
+  }
+
+    enemy->x += sin(enemyAngle) * enemy->speed;
+    enemy->y += cos(enemyAngle) * enemy->speed;
+  
+
+}
+
 
 
 void updateProjectiles(Projectile projectiles[], Tigr *screen) {
@@ -52,13 +79,24 @@ void drawPlayer(Player *player, Tigr *screen) {
            tigrRGB(255, 0, 0));
 }
 
-void drawEnemy(Tigr *screen, int cx, int cy, TPixel color) {
+void drawEnemy(Tigr *screen, Player *enemy, int cx, int cy, TPixel color) {
 	int x, y;
 	
-    tigrRect(screen, cx, cy, PLAYER_WIDTH, PLAYER_HEIGHT,
-           tigrRGB(0, 0, 0));
-           
-				tigrPlot(screen, cx + x, cy + y, color);
+  tigrRect(screen, cx, cy, PLAYER_WIDTH, PLAYER_HEIGHT,
+           tigrRGB(0, 0, 0));         
+	tigrPlot(screen, cx + x, cy + y, color);
+
+  Tigr *enemy_image;
+
+  enemy_image = tigrLoadImage("enemy.png");
+  if (!enemy_image) {
+    tigrError(0, "No se puede cargar enemy.png");
+  }
+
+  tigrBlitAlpha(screen, enemy_image, enemy->x - (float)PLAYER_WIDTH / 2,
+                enemy->y - (float)PLAYER_HEIGHT, 0, 0, (float)PLAYER_WIDTH,
+                (float)PLAYER_HEIGHT, 1.0f);
+
 }
 
 void drawProjectiles(Projectile projectiles[], Tigr *screen) {
@@ -80,11 +118,13 @@ int main() {
   
   Tigr *screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Game", 0);
 
-  Player player = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
-                   5.0f};
+  Player player = {
+    SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10, 5.0f
+    };
   Projectile projectiles[PROJECTILE_SIZE];
 
-  Player enemy = {enemyX , enemyY, 5.0f
+  Player enemy = {
+    enemyX , enemyY, 5.0f
   };
 
 
@@ -98,6 +138,7 @@ int main() {
 
     updatePlayer(&player, screen);
     updateProjectiles(projectiles, screen);
+    updateEnemy(&enemy, screen);
 
     if (tigrKeyHeld(screen, 'Z')) {
       for (int i = 0; i < PROJECTILE_SIZE; ++i) {
@@ -111,13 +152,14 @@ int main() {
         }
       }
     }
-    if (enemyX - 10 < 0 || enemyX + 10 > 640) {
-			enemyAngle = -enemyAngle;
-		}
+// Void update enemy
+  /* if (enemyX - 10 < 0 || enemyX + 10 > 640) {
+		enemyAngle = -enemyAngle;
+	}
 
 	if (enemyY < -6) {
 			enemyAngle = PI - enemyAngle;
-		}
+	}
 
   if (enemyY > 354) {
 
@@ -129,10 +171,11 @@ int main() {
 
     enemyX += sin(enemyAngle) * enemySpeed;
     enemyY += cos(enemyAngle) * enemySpeed;
+ */
 
     drawPlayer(&player, screen);
     drawProjectiles(projectiles, screen);
-    drawEnemy(screen, enemyX, enemyY, tigrRGB(0, 0, 0));
+    drawEnemy(screen, &enemy, enemyX, enemyY, tigrRGB(0, 0, 0));
 
     tigrUpdate(screen);
   }
