@@ -32,6 +32,8 @@ void updatePlayer(TPlayer *player, Tigr *screen) {
     player->y += player->speed = PLAYER_SPEED;
   }
 
+  // Esto permite que cuando el personaje se pase del limite de la
+  // pantalla reaparezca en el lado
   player->x = ((int)player->x + screen->w) % screen->w;
   player->y = ((int)player->y + screen->h) % screen->h;
 }

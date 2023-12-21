@@ -7,7 +7,7 @@
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
 #define PLAYER_SPEED 5.0f
-#define PROJECTILE_SIZE 6
+#define PROJECTILE_SIZE 10
 #define PROJECTILE_SPEED 5.0f
 
 // Tipo de dato que define al proyectil
