@@ -1,15 +1,11 @@
 
 #include "../src/tigr.h"
-#include <math.h>
-#include <time.h>
-#include <stdlib.h>
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define PLAYER_WIDTH 23
 #define PLAYER_HEIGHT 22
 #define PROJECTILE_SIZE 5
-#define PI 3.1415
 
 typedef struct {
   float x, y;
@@ -46,66 +42,46 @@ void updateProjectiles(Projectile projectiles[], Tigr *screen) {
 
 void drawPlayer(Player *player, Tigr *screen) {
 
-  tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
-           tigrRGB(255, 0, 0));
-}
+  Tigr *player_image;
 
-void drawEnemy(Tigr *screen, Player *enemy, int cx, int cy, TPixel color) {
-	int x, y;
-	
-  tigrRect(screen, cx, cy, PLAYER_WIDTH, PLAYER_HEIGHT,
-           tigrRGB(0, 0, 0));         
-	tigrPlot(screen, cx + x, cy + y, color);
-
-  Tigr *enemy_image;
-
-  enemy_image = tigrLoadImage("enemy.png");
-  if (!enemy_image) {
-    tigrError(0, "No se puede cargar enemy.png");
+  player_image = tigrLoadImage("player.png");
+  if (!player) {
+    tigrError(0, "No se puede cargar player.png");
   }
 
-  tigrBlitAlpha(screen, enemy_image, enemy->x - (float)PLAYER_WIDTH / 2,
-                enemy->y - (float)PLAYER_HEIGHT, 0, 0, (float)PLAYER_WIDTH,
-                (float)PLAYER_HEIGHT, 1.0f);
+  tigrRect(screen, player->x, player->y, PLAYER_WIDTH, PLAYER_HEIGHT,
+           tigrRGB(255, 255, 255));
 
+  tigrBlitAlpha(screen, player_image, player->x - (float)PLAYER_WIDTH / 2,
+                player->y - (float)PLAYER_HEIGHT, 0, 0, (float)PLAYER_WIDTH,
+                (float)PLAYER_HEIGHT, 1.0f);
 }
 
 void drawProjectiles(Projectile projectiles[], Tigr *screen) {
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     if (projectiles[i].active) {
       tigrRect(screen, projectiles[i].x, projectiles[i].y, PROJECTILE_SIZE,
-               PROJECTILE_SIZE, tigrRGB(0, 0, 0));
+               PROJECTILE_SIZE, tigrRGB(255, 0, 0));
     }
   }
 }
 
 int main() {
-  
-  srand(time(NULL));
-  float enemyAngle= 1.0472;
-
-  int enemySpeed = 4, enemyX = 320, enemyY = 240;
-
-  
   Tigr *screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Game", 0);
+  Tigr *background;
 
-  Player player = {
-    SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10, 5.0f
-    };
+  Player player = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
+                   5.0f};
   Projectile projectiles[PROJECTILE_SIZE];
-
-  Player enemy = {
-    enemyX , enemyY, 5.0f
-  };
-
-
 
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     projectiles[i].active = 0;
   }
 
+  tigrClear(background, tigrRGB(80, 180, 255));
+
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
-    tigrClear(screen, tigrRGB(213, 255, 213));
+    tigrClear(screen, tigrRGB(0, 0, 0));
 
     updatePlayer(&player, screen);
     updateProjectiles(projectiles, screen);
@@ -122,30 +98,12 @@ int main() {
         }
       }
     }
-// Void update enemy
-  if (enemyX - 10 < 0 || enemyX + 10 > 640) {
-		enemyAngle = -enemyAngle;
-	}
 
-	if (enemyY < -6) {
-			enemyAngle = PI - enemyAngle;
-	}
-
-  if (enemyY > 354) {
-
-      enemyAngle = PI - enemyAngle;
-
-			
-			enemyAngle += ((float)(rand() - (RAND_MAX / 2)) / (float)RAND_MAX) / 20;
-    }
-
-    enemyX += sin(enemyAngle) * enemySpeed;
-    enemyY += cos(enemyAngle) * enemySpeed;
-
+/*     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
+ */    
 
     drawPlayer(&player, screen);
     drawProjectiles(projectiles, screen);
-    drawEnemy(screen, &enemy, enemyX, enemyY, tigrRGB(0, 0, 0));
 
     tigrUpdate(screen);
   }
