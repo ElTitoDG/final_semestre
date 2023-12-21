@@ -21,11 +21,11 @@ typedef struct {
 void updatePlayer(Player *player, Tigr *screen) {
   if (tigrKeyHeld(screen, 'A'))
     player->x -= player->speed;
-  if (tigrKeyHeld(screen, 'D'))
+  else if (tigrKeyHeld(screen, 'D'))
     player->x += player->speed;
-  if (tigrKeyHeld(screen, 'W'))
+  else if (tigrKeyHeld(screen, 'W'))
     player->y -= player->speed;
-  if (tigrKeyHeld(screen, 'S'))
+  else if (tigrKeyHeld(screen, 'S'))
     player->y += player->speed;
 }
 

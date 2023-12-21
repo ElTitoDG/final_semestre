@@ -33,35 +33,6 @@ void updatePlayer(Player *player, Tigr *screen) {
     player->y += player->speed;
 }
 
-void updateEnemy(Player *enemy, Tigr *screen)
-{
-
-  srand(time(NULL));
-  float enemyAngle= 1.0472;
-
-  // int enemySpeed = 4, enemyX = 320, enemyY = 240;
-
-  if (enemy->x - 10 < 0 || enemy->x + 10 > 640) {
-		enemyAngle = -enemyAngle;
-	}
-
-	if (enemy->y < -6) {
-			enemyAngle = PI - enemyAngle;
-	}
-
-  if (enemy->y > 354) {
-    enemyAngle = PI - enemyAngle;	
-		enemyAngle += ((float)(rand() - (RAND_MAX / 2)) / (float)RAND_MAX) / 20;
-  }
-
-    enemy->x += sin(enemyAngle) * enemy->speed;
-    enemy->y += cos(enemyAngle) * enemy->speed;
-  
-
-}
-
-
-
 void updateProjectiles(Projectile projectiles[], Tigr *screen) {
   for (int i = 0; i < PROJECTILE_SIZE; ++i) {
     if (projectiles[i].active) {
@@ -138,7 +109,6 @@ int main() {
 
     updatePlayer(&player, screen);
     updateProjectiles(projectiles, screen);
-    updateEnemy(&enemy, screen);
 
     if (tigrKeyHeld(screen, 'Z')) {
       for (int i = 0; i < PROJECTILE_SIZE; ++i) {
@@ -153,7 +123,7 @@ int main() {
       }
     }
 // Void update enemy
-  /* if (enemyX - 10 < 0 || enemyX + 10 > 640) {
+  if (enemyX - 10 < 0 || enemyX + 10 > 640) {
 		enemyAngle = -enemyAngle;
 	}
 
@@ -171,7 +141,7 @@ int main() {
 
     enemyX += sin(enemyAngle) * enemySpeed;
     enemyY += cos(enemyAngle) * enemySpeed;
- */
+
 
     drawPlayer(&player, screen);
     drawProjectiles(projectiles, screen);
