@@ -23,6 +23,11 @@ typedef struct Tplayer
   float x, y, speed;
 } TPlayer;
 
+typedef struct {
+  float x, y, speed;
+  int active;
+} TProjectile;
+
 // Función encargada de gestionar el movimiento y colisiones del personajes
 void updatePlayer(TPlayer *player, Tigr *screen) 
 {
@@ -74,34 +79,36 @@ void updateEnemy(TPlayer *enemy, Tigr *screen, float enemy_speed)
 
   enemy->speed = enemy_speed;
 
-  srand(time(NULL));
   float enemyAngle= rand();
+  float randomOffset = rand() / (RAND_MAX + 1.0) * 3 * PI;
+  float newAngle = enemyAngle + randomOffset;
+
+  srand(time(NULL));
   if (enemy->x - 10 < 0) 
   {
     enemy->x = 10;
-    enemyAngle = PI - enemyAngle;
+    newAngle = PI - newAngle;
   }
   else if (enemy->x + 10 > 430) 
   {
     enemy->x = 420;
-    enemyAngle = PI - enemyAngle;
+    newAngle = PI - newAngle;
   }
 
   if (enemy->y < 0) 
   {
     enemy->y = 0;
-    enemyAngle = 2*PI - enemyAngle;
+    newAngle = 2*PI - newAngle;
   }
   else if (enemy->y > 310) 
   {
     enemy->y = 310;
-    enemyAngle = 2*PI - enemyAngle;
+    newAngle = 2*PI - newAngle;
   }
 
-  enemy->x += sin(enemyAngle) * enemy->speed;
-  enemy->y += cos(enemyAngle) * enemy->speed;
+  enemy->x += sin(newAngle) * enemy->speed;
+  enemy->y += cos(newAngle) * enemy->speed;
 }
-
 
 
 void drawEnemy(TPlayer *enemy, Tigr *screen)
@@ -123,4 +130,12 @@ void drawEnemy(TPlayer *enemy, Tigr *screen)
 
   tigrBlitAlpha(screen, enemy_image, enemy->x, enemy->y, 0, (float)1.9,
                 (float)PLAYER_WIDTH, (float)PLAYER_HEIGHT, 1.0f);
+}
+
+// Update and draw multiple enemies
+void updateAndDrawEnemies(TPlayer enemies[], int num_enemies, Tigr *screen, float enemy_speed) {
+    for (int i = 0; i < num_enemies; ++i) {
+        updateEnemy(&enemies[i], screen, enemy_speed);
+        drawEnemy(&enemies[i], screen);
+    }
 }
