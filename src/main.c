@@ -3,6 +3,8 @@
 #include "tigr.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 //Macros necesarias
 #define SCREEN_WIDTH 440
@@ -34,6 +36,8 @@ void drawPlayer(TPlayer *player, Tigr *screen);
 void updateProjectiles(TProjectile projectiles[], Tigr *screen);
 void drawProjectiles(TProjectile projectiles[], Tigr *screen);
 void shoot(TProjectile projectiles[], TPlayer player, Tigr *screen);
+void drawEnemy(TPlayer *enemy, Tigr *screen);
+void updateEnemy(TPlayer *enemy, Tigr *screen, float enemy_speed);
 
 
 
@@ -55,8 +59,19 @@ int main(int argc, char *argv[]) {
 
   // Inicialización de las structuras con 
   // sus tipos de datos correspondientes
-  TPlayer player = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10,
-                    5.0f};
+  TPlayer player = 
+  { 
+    SCREEN_WIDTH / 2.0f, 
+    SCREEN_HEIGHT - PLAYER_HEIGHT - 10, 
+    5.0f
+  };
+
+  TPlayer enemy = 
+  {
+    SCREEN_HEIGHT/2, 
+    SCREEN_WIDTH/2, 
+    5.0f
+  };
 
   TProjectile projectiles[PROJECTILE_SIZE];
 
@@ -80,6 +95,7 @@ int main(int argc, char *argv[]) {
     dt = tigrTime();
     
     updatePlayer(&player, screen);
+    updateEnemy(&enemy, screen, 0.5);
     updateProjectiles(projectiles, screen);
 
 
@@ -89,6 +105,7 @@ int main(int argc, char *argv[]) {
     tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
 
     drawPlayer(&player, screen);
+    drawEnemy(&enemy, screen);
     drawProjectiles(projectiles, screen);
     tigrPrint(screen, tfont, 2, 3, tigrRGBA(0xc0, 0xd0, 0xff, 0xc0),
               text);
@@ -100,12 +117,9 @@ int main(int argc, char *argv[]) {
   dt = tigrTime();
   printf("Time %f\n", dt);
 
-  printf("System: %i\n", system("uname -s"));
-  /* system("uname -s");
-  if (system("uname -s") == "Darwin")
-    printf("Mac Os "); */
-
+  system("uname -s");
 
   tigrFree(screen);
+  tigrFree(background);
   return 0;
 }

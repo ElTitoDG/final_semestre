@@ -41,7 +41,6 @@ void drawProjectiles(TProjectile projectiles[], Tigr *screen);
 void shoot(TProjectile projectiles[], TPlayer player, Tigr *screen);
 
 void drawEnemy(Tigr *screen, TPlayer *enemy, int cx, int cy, int radio, TPixel color) {
-	
   int x, y;
 	for (y = -radio + 1; y < radio; y++){
 		for (x = -radio + 1; x < radio; x++){

@@ -15,4 +15,7 @@ typedef struct {
 
 void updatePlayer(TPlayer *player, Tigr *screen);
 void drawPlayer(TPlayer *player, Tigr *screen);
+void drawEnemy(TPlayer *enemy, Tigr *screen);
+void updateEnemy(TPlayer *enemy, Tigr *screen, float enemy_speed);
+
 #endif // CORE_H
