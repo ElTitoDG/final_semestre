@@ -48,11 +48,11 @@ int main(int argc, char *argv[])
 
   // Variables básicas
   float playerxs = 0, playerys = 0;
-  int dif;
+  // int dif;
   Tigr *screen, *background; //*player
 
 
-  do {
+  /* do {
 
       //Llamada a la función menú
       dif = menu();
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 
       }
 
-  } while (dif != 0);
+  } while (dif != 0); */
   
   // Crea ventana
   screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game 1", 0);
@@ -110,10 +110,10 @@ int main(int argc, char *argv[])
   }
 
   // Main background
-  tigrClear(background, tigrRGB(80, 180, 255));
+  tigrClear(background, tigrRGB(30, 132, 73));
 
   // Green grass
-  tigrFill(background, 0, player.y - 80, SCREEN_WIDTH, 2, tigrRGB(0, 0, 0));
+  //tigrFill(background, 0, player.y - 80, SCREEN_WIDTH, 2, tigrRGB(0, 0, 0));
 
   // White line
   // tigrLine(background, 0, 201, 320, 201, tigrRGB(255, 255, 255));
@@ -124,8 +124,6 @@ int main(int argc, char *argv[])
   {
     
     updatePlayer(&player, screen);
-    /* updateEnemy(&enemy, screen, 0.5);
-    updateEnemy(&enemy2, screen, 0.5); */
     updateProjectiles(projectiles, screen);
 
 
@@ -139,11 +137,9 @@ int main(int argc, char *argv[])
     //shootUpdate(enemies, 4, projectiles, screen, 0.5);
 
     drawPlayer(&player, screen);
-    /* drawEnemy(&enemy, screen);
-    drawEnemy(&enemy2, screen); */
+
     drawProjectiles(projectiles, screen);
-    /* tigrPrint(screen, tfont, 2, 3, tigrRGBA(0xc0, 0xd0, 0xff, 0xc0),
-              text); */
+
    
     // Update screen input
     tigrUpdate(screen);
@@ -159,7 +155,7 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-int menu() {
+/* int menu() {
 // Creación de la varible dificultad
 int dificultad;
 do {
@@ -175,4 +171,4 @@ scanf("%d", &dificultad);
 } while (dificultad < 0 || dificultad > 2);
 
 return dificultad;
-}
+} */
