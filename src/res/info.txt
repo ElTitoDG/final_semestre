@@ -1,2 +1,1 @@
-Manten el boton F para mostrar 
-la caja del personaje
+Bienvenido a Bongo Game(Alpha Test), cazalos a todos.

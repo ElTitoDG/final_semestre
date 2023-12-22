@@ -71,14 +71,15 @@ default: help
 # Help message
 help:
 	@echo "$(BLUE)Projecto Final Semestre$(END_COLOR)"
+	@echo "$(BROWN)Bongo Game$(END_COLOR)"
 	@echo
 	@echo "Target rules:"
-	@echo "    all      - Set up project and compiles"
-	@echo "    cc    	- Compiles and generates binary file"
-	@echo "    run      - Run the current binary file"
-	@echo "    dirs     - Creates all the required dirs"
-	@echo "    clean    - Clean the project by removing binaries"
-	@echo "    help     - Prints a help message with target rules"
+	@echo "    all      - Configura y compila el projecto"
+	@echo "    cc    	- Compila y genera el archivo binario"
+	@echo "    run      - Ejecuta el binario generado"
+	@echo "    dirs     - Crea todos los directorios necesarios"
+	@echo "    clean    - Depura los archivos generados"
+	@echo "    help     - Imprime en pantalla el mensaje de ayuda"
 	@echo
 	
 
