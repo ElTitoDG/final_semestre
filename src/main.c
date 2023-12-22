@@ -27,6 +27,7 @@ typedef struct {
 } TProjectile;
 
 
+
 // void update(float *dt, float *remaining, Tigr *screen, float *playerx,
 //             float *playery, float *playerxs, float *playerys);
 
@@ -40,7 +41,7 @@ void shoot(TProjectile projectiles[], TPlayer player, Tigr *screen);
 void drawEnemy(TPlayer *enemy, Tigr *screen);
 void updateEnemy(TPlayer *enemy, Tigr *screen, float enemy_speed);
 void updateAndDrawEnemies(TPlayer enemies[], int num_enemies, Tigr *screen, float enemy_speed);
-//void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed);
+void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed);
 
 
 int main(int argc, char *argv[]) 
@@ -82,19 +83,12 @@ int main(int argc, char *argv[])
   } while (dif != 0);
   
   // Crea ventana
-  screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game 1", 0);
+  screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bango Game Alpha Test", TIGR_2X);
   background = tigrBitmap(screen->w, screen->h);
-
-  /* char *text = (char *)tigrReadFile("res/info.txt", 0);
-  if (!text)
-    tigrError(0, "Cannot load info.txt"); */
 
   // Inicialización de las structuras con 
   // sus tipos de datos correspondientes
   TPlayer player = { SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10, 5.0f };
-
-  /* TPlayer enemy = { SCREEN_HEIGHT/2, SCREEN_WIDTH/2, 5.0f };
-  TPlayer enemy2 = { SCREEN_HEIGHT, SCREEN_WIDTH, 5.0f }; */
 
   TPlayer enemies[4] = {
     { SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT/2, 5.0f },
@@ -110,40 +104,37 @@ int main(int argc, char *argv[])
   }
 
   // Main background
-  tigrClear(background, tigrRGB(80, 180, 255));
+  tigrClear(background, tigrRGB(30, 132, 73));
 
   // Green grass
-  tigrFill(background, 0, player.y - 80, SCREEN_WIDTH, 2, tigrRGB(0, 0, 0));
+  /* tigrFill(background, 0, player.y - 80, SCREEN_WIDTH, 2, tigrRGB(0, 0, 0)); */
 
   // White line
   // tigrLine(background, 0, 201, 320, 201, tigrRGB(255, 255, 255));
+
 
 
   // Bucle principal de juego
   while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) 
   {
     
+    // compose the background
+    tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
+
     updatePlayer(&player, screen);
-    /* updateEnemy(&enemy, screen, 0.5);
-    updateEnemy(&enemy2, screen, 0.5); */
     updateProjectiles(projectiles, screen);
 
 
     shoot(projectiles, player, screen);
 
-    // compose the background
-    tigrBlit(screen, background, 0, 0, 0, 0, background->w, background->h);
 
     updateAndDrawEnemies(enemies, 4, screen, 0.5);
 
-    //shootUpdate(enemies, 4, projectiles, screen, 0.5);
+    shootUpdate(enemies, 4, projectiles, screen, 0.5);
 
     drawPlayer(&player, screen);
-    /* drawEnemy(&enemy, screen);
-    drawEnemy(&enemy2, screen); */
     drawProjectiles(projectiles, screen);
-    /* tigrPrint(screen, tfont, 2, 3, tigrRGBA(0xc0, 0xd0, 0xff, 0xc0),
-              text); */
+    
    
     // Update screen input
     tigrUpdate(screen);

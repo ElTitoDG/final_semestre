@@ -15,3 +15,6 @@ demo : test.c ../src/tigr.c
 
 demo2 : test2.c ../src/tigr.c
 	clang $^ -Os -o $@ $(CFLAGS) $(LDFLAGS)
+
+menu : menu.c ../src/tigr.c
+	clang $^ -Os -o $@ $(CFLAGS) $(LDFLAGS)

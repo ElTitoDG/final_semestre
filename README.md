@@ -25,6 +25,12 @@ El archivo makefile sirve para simplificar el proceso a la hora de compilar cual
 
 Si se invoca el comando `make help` se mostrara todos los comandos disponibles pero en este caso solo nos importara el comando `make all` y el `make run`, los cuales compilaran el proyecto y lo correran.
 
+Por tanto las instrucciones para correr el proyecto son:
+
+1. Entrar en la carpeta `src`.
+2. Invocar el comando `make all`.
+3. Invocar el comando `make run`. 
+
 
 ## Extra
 
