@@ -31,6 +31,7 @@ typedef struct {
 //             float *playery, float *playerxs, float *playerys);
 
 // Modulos externos
+int menu();
 void updatePlayer(TPlayer *player, Tigr *screen);
 void drawPlayer(TPlayer *player, Tigr *screen);
 void updateProjectiles(TProjectile projectiles[], Tigr *screen);
@@ -47,8 +48,39 @@ int main(int argc, char *argv[])
 
   // Variables básicas
   float playerxs = 0, playerys = 0;
+  int dif;
   Tigr *screen, *background; //*player
 
+
+  do {
+
+      //Llamada a la función menú
+      dif = menu();
+
+      switch (dif)
+      {
+      case 1: // Fácil.
+
+        TPlayer enemies[4];
+
+        break;
+      
+      case 2: // Normal
+
+        TPlayer enemies[6];
+
+        break;
+      
+      case 3: // Difiícil
+
+        TPlayer enemies[8];
+
+        break;
+
+      }
+
+  } while (dif != 0);
+  
   // Crea ventana
   screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game 1", 0);
   background = tigrBitmap(screen->w, screen->h);
@@ -125,4 +157,22 @@ int main(int argc, char *argv[])
   tigrFree(screen);
   tigrFree(background);
   return 0;
+}
+
+int menu() {
+// Creación de la varible dificultad
+int dificultad;
+do {
+printf("************Vienvenido a Bango************\n");
+printf("------------------------------------------\n");
+printf("Elige una de las siguentes dificultades:\n");
+printf("1. Fácil\n");
+printf("2. Normal\n");
+printf("3. Difícil\n");
+pritnf("Elija la dificultad: ");
+scanf("%d", &dificultad);
+
+} while (dificultad < 0 || dificultad > 2);
+
+return dificultad;
 }
