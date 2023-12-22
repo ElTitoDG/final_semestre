@@ -1,6 +1,6 @@
 #include<stdio.h>
-#include "../src/tigr.h"
-#include "../src/core.h"
+#include "tigr.h"
+#include "core.h"
 
 //Prototipos
 void Ventana(Tigr *menu, int x_ventana, int y_ventana);
