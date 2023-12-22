@@ -6,8 +6,6 @@
 #include <math.h>
 #include <time.h>
 
-//HOLAAAA
-
 //Macros necesarias
 #define SCREEN_WIDTH 440
 #define SCREEN_HEIGHT 320
