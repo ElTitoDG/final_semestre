@@ -12,9 +12,7 @@
 #define _CRT_SECURE_NO_WARNINGS NOPE
 
 // Graphics configuration.
-#ifndef TIGR_HEADLESS
 #define TIGR_GAPI_GL
-#endif
 
 // Creates a new bitmap, with extra payload bytes.
 Tigr* tigrBitmap2(int w, int h, int extra);
@@ -37,7 +35,7 @@ void tigrPosition(Tigr* bmp, int scale, int windowW, int windowH, int out[4]);
 #include <windows.h>
 #endif
 
-#if !defined(TIGR_HEADLESS) && __linux__ && !__ANDROID__
+#if __linux__ && !__ANDROID__
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #endif
@@ -98,6 +96,8 @@ typedef struct {
     int shown, closed;
 #ifdef TIGR_GAPI_GL
     GLStuff gl;
+#endif
+
 #ifdef _WIN32
     wchar_t* wtitle;
     DWORD dwStyle;
@@ -113,7 +113,6 @@ typedef struct {
     XIC ic;
 #endif  // __ANDROID__
 #endif  // __linux__
-#endif  // TIGR_GAPI_GL
 
     Tigr* widgets;
     int widgetsWanted;
@@ -293,14 +292,6 @@ Tigr* tigrBitmap(int w, int h) {
     return tigrBitmap2(w, h, 0);
 }
 
-#ifdef TIGR_HEADLESS
-void tigrFree(Tigr* bmp) {
-    free(bmp->pix);
-    free(bmp);
-}
-#endif // TIGR_HEADLESS
-
-
 void tigrResize(Tigr* bmp, int w, int h) {
     if (bmp->w == w && bmp->h == h) {
         return;
@@ -465,22 +456,15 @@ void tigrFillRect(Tigr* bmp, int x, int y, int w, int h, TPixel color) {
 
 void tigrRect(Tigr* bmp, int x, int y, int w, int h, TPixel color) {
     int x1, y1;
-    if (w <= 0 || h <= 0) {
+    if (w <= 0 || h <= 0)
         return;
-    }
 
-    if (w == 1) {
-        tigrLine(bmp, x, y, x, y + h, color);
-    } else if (h == 1) {
-        tigrLine(bmp, x, y, x + w, y, color);
-    } else {
-        x1 = x + w - 1;
-        y1 = y + h - 1;
-        tigrLine(bmp, x, y, x1, y, color);
-        tigrLine(bmp, x1, y, x1, y1, color);
-        tigrLine(bmp, x1, y1, x, y1, color);
-        tigrLine(bmp, x, y1, x, y, color);
-    }
+    x1 = x + w - 1;
+    y1 = y + h - 1;
+    tigrLine(bmp, x, y, x1, y, color);
+    tigrLine(bmp, x1, y, x1, y1, color);
+    tigrLine(bmp, x1, y1, x, y1, color);
+    tigrLine(bmp, x, y1, x, y, color);
 }
 
 void tigrFillCircle(Tigr* bmp, int x0, int y0, int r, TPixel color) {
@@ -637,6 +621,51 @@ void tigrBlitTint(Tigr* dst, Tigr* src, int dx, int dy, int sx, int sy, int w, i
     } while (--h);
 }
 
+
+void tigrBlitTintScaled(Tigr *dst, Tigr *src, int dx, int dy,int dw,int dh, int sx, int sy, int sw, int sh,TPixel tint)
+{
+	int x, y;
+	float su,sv,u,v;
+	//	don't try zero width or height
+	if (dw==0) return;
+	if (dh==0) return;
+	//	SU is the step to take per pixel X
+	su = ((float)sw/(float)dw);
+	//	SV is the step to take per pixel Y
+	sv = ((float)sh/(float)dh);
+	//	V is texel coordinate for Y step
+	v = sy;
+
+	int xr = EXPAND(tint.r);
+	int xg = EXPAND(tint.g);
+	int xb = EXPAND(tint.b);
+	int xa = EXPAND(tint.a);
+
+	for (int y=0;y<dh;y++)
+	{
+		//	Y is texel coordinate for X step
+		u = sx;
+		for (int x=0;x<dw;x++)
+		{
+			//	get the pixel and wrap around the width and height 
+			TPixel ts = tigrGet(src,((int)u)%src->w,((int)v)%src->h);
+			TPixel td = tigrGet(dst,dx+x,dy+y);
+			unsigned r = (xr * ts.r) >> 8;
+			unsigned g = (xg * ts.g) >> 8;
+			unsigned b = (xb * ts.b) >> 8;
+			unsigned a = xa * EXPAND(ts.a);
+			td.r += (unsigned char)((r - td.r) * a >> 16);
+			td.g += (unsigned char)((g - td.g) * a >> 16);
+			td.b += (unsigned char)((b - td.b) * a >> 16);
+			td.a += (dst->blitMode) * (unsigned char)((ts.a - td.a) * a >> 16);
+			//	color mix
+			tigrPlot(dst,dx+x,dy+y,td);
+			u+=su;
+		}
+		v+=sv;
+	}
+}
+
 void tigrBlitAlpha(Tigr* dst, Tigr* src, int dx, int dy, int sx, int sy, int w, int h, float alpha) {
     alpha = (alpha < 0) ? 0 : (alpha > 1 ? 1 : alpha);
     tigrBlitTint(dst, src, dx, dy, sx, sy, w, h, tigrRGBA(0xff, 0xff, 0xff, (unsigned char)(alpha * 255)));
@@ -774,7 +803,7 @@ static void depalette(int w,
                       int trnsSize) {
     int x, y, c;
     unsigned char alpha;
-    int mask = 0, len = 0;
+    int mask, len;
 
     switch (bipp) {
         case 4:
@@ -1210,26 +1239,26 @@ static void copy(State* s, const unsigned char* src, int len) {
         *dest++ = *src++;
 }
 
-static int build(State* s, unsigned* tree, unsigned char* lens, unsigned int symcount) {
-    unsigned int codes[16], first[16], counts[16] = { 0 };
+static int build(State* s, unsigned* tree, unsigned char* lens, int symcount) {
+    int n, codes[16], first[16], counts[16] = { 0 };
 
     // Frequency count.
-    for (unsigned int n = 0; n < symcount; n++)
+    for (n = 0; n < symcount; n++)
         counts[lens[n]]++;
 
     // Distribute codes.
     counts[0] = codes[0] = first[0] = 0;
-    for (unsigned int n = 1; n <= 15; n++) {
+    for (n = 1; n <= 15; n++) {
         codes[n] = (codes[n - 1] + counts[n - 1]) << 1;
         first[n] = first[n - 1] + counts[n - 1];
     }
     CHECK(first[15] + counts[15] <= symcount);
 
     // Insert keys into the tree for each symbol.
-    for (unsigned int n = 0; n < symcount; n++) {
+    for (n = 0; n < symcount; n++) {
         int len = lens[n];
         if (len != 0) {
-            unsigned code = codes[len]++, slot = first[len]++;
+            int code = codes[len]++, slot = first[len]++;
             tree[slot] = (code << (32 - len)) | (n << 4) | len;
         }
     }
@@ -1316,7 +1345,7 @@ static void dynamic(State* s) {
     ndist = 1 + bits(s, 5);
     nlen = 4 + bits(s, 4);
     for (n = 0; n < nlen; n++)
-        lenlens[(int) order[n]] = (unsigned char)bits(s, 3);
+        lenlens[order[n]] = (unsigned char)bits(s, 3);
 
     // Build the tree for decoding code lengths.
     s->tlen = build(s, s->lencodes, lenlens, 19);
@@ -1674,7 +1703,6 @@ static int cp1252[] = {
     0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef, 0x00f0, 0x00f1, 0x00f2, 0x00f3, 0x00f4,
     0x00f5, 0x00f6, 0x00f7, 0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff,
 };
-
 static int border(Tigr* bmp, int x, int y) {
     TPixel top = tigrGet(bmp, 0, 0);
     TPixel c = tigrGet(bmp, x, y);
@@ -1694,109 +1722,43 @@ static void scan(Tigr* bmp, int* x, int* y, int* rowh) {
     }
 }
 
-/*
- * Watermarks are encoded vertically in the alpha channel using seven pixels
- * starting at x, y. The first and last alpha values contain the magic values
- * 0b10101010 and 0b01010101 respectively.
- */
-static int readWatermark(Tigr* bmp, int x, int y, int* big, int* small) {
-    const int magicHeader = 0xAA;
-    const int magicFooter = 0x55;
-
-    unsigned char watermark[7];
-
-    for (int i = 0; i < 7; i++) {
-        TPixel c = tigrGet(bmp, x, y + i);
-        watermark[i] = c.a;
-    }
-
-    if (watermark[0] != magicHeader || watermark[6] != magicFooter) {
-        return 0;
-    }
-
-    *big = watermark[1] | (watermark[2] << 8) | (watermark[3] << 16) | (watermark[4] << 24);
-    *small = watermark[5];
-
-    return 1;
-}
-
 int tigrLoadGlyphs(TigrFont* font, int codepage) {
-    int x = 0;
-    int y = 0;
-    int w = 0;
-    int h = 0;
-    int rowh = 1;
-
+    int i, x = 0, y = 0, w, h, rowh = 1;
     TigrGlyph* g;
     switch (codepage) {
-        case TCP_ASCII:
+        case 0:
             font->numGlyphs = 128 - 32;
             break;
-        case TCP_1252:
+        case 1252:
             font->numGlyphs = 256 - 32;
             break;
-        case TCP_UTF32:
-            if (!readWatermark(font->bitmap, 0, 0, &font->numGlyphs, &rowh)) {
-                return 0;
-            }
-            h = rowh;
-            x = 1;
-            break;
-        default:
-            errno = EINVAL;
-            return 0;
     }
 
     font->glyphs = (TigrGlyph*)calloc(font->numGlyphs, sizeof(TigrGlyph));
-
-    for (int index = 0; index < font->numGlyphs; index++) {
-        // Look up the Unicode code point.
-        g = &font->glyphs[index];
-
-        if (codepage != TCP_UTF32) {
-            // Find the next glyph.
-            scan(font->bitmap, &x, &y, &rowh);
-
-            if (y >= font->bitmap->h) {
-                errno = EINVAL;
-                return 0;
-            }
-
-            // Scan the width and height
-            w = h = 0;
-            while (!border(font->bitmap, x + w, y)) {
-                w++;
-            }
-
-            while (!border(font->bitmap, x, y + h)) {
-                h++;
-            }
+    for (i = 32; i < font->numGlyphs + 32; i++) {
+        // Find the next glyph.
+        scan(font->bitmap, &x, &y, &rowh);
+        if (y >= font->bitmap->h) {
+            errno = EINVAL;
+            return 0;
         }
 
-        switch (codepage) {
-            case TCP_ASCII:
-                g->code = index + 32;
-                break;
-            case TCP_1252:
-                if (index < 96) {
-                    g->code = index + 32;
-                } else {
-                    g->code = cp1252[index - 96];
-                }
-                break;
-            case TCP_UTF32:
-                if (!readWatermark(font->bitmap, x, y, &g->code, &w)) {
-                    // Maybe we are at the end of a row?
-                    x = 0;
-                    y += rowh;
-                    if (!readWatermark(font->bitmap, x, y, &g->code, &w)) {
-                        return 0;
-                    }
-                }
-                x++;
-                break;
-            default:
-                return 0;
+        // Scan the width and height
+        w = h = 0;
+        while (!border(font->bitmap, x + w, y))
+            w++;
+        while (!border(font->bitmap, x, y + h))
+            h++;
+
+        // Look up the Unicode code point.
+        g = &font->glyphs[i - 32];
+        if (i < 128)
+            g->code = i;  // ASCII
+        else if (codepage == 1252)
+            g->code = cp1252[i - 128];
+        else {
+            errno = EINVAL;
+            return 0;
         }
 
         g->x = x;
@@ -1809,13 +1771,12 @@ int tigrLoadGlyphs(TigrFont* font, int codepage) {
             return 0;
         }
 
-        if (h > rowh) {
+        if (h > rowh)
             rowh = h;
-        }
     }
 
     // Sort by code point.
-    for (int i = 1; i < font->numGlyphs; i++) {
+    for (i = 1; i < font->numGlyphs; i++) {
         int j = i;
         TigrGlyph g = font->glyphs[i];
         while (j > 0 && font->glyphs[j - 1].code > g.code) {
@@ -1900,6 +1861,40 @@ void tigrPrint(Tigr* dest, TigrFont* font, int x, int y, TPixel color, const cha
     }
 }
 
+void tigrPrintScaled(Tigr* dest, TigrFont* font, int x, int y, float xs,float ys,TPixel color, const char* text, ...) {
+    char tmp[1024];
+    TigrGlyph* g;
+    va_list args;
+    const char* p;
+    int start = x, c;
+
+    tigrSetupFont(font);
+
+    // Expand the formatting string.
+    va_start(args, text);
+    vsnprintf(tmp, sizeof(tmp), text, args);
+    tmp[sizeof(tmp) - 1] = 0;
+    va_end(args);
+
+    // Print each glyph.
+    p = tmp;
+    while (*p) {
+        p = tigrDecodeUTF8(p, &c);
+        if (c == '\r')
+            continue;
+        if (c == '\n') {
+            x = start;
+            y += tigrTextHeight(font, "") * ys;
+            continue;
+        }
+        g = get(font, c);
+//        tigrBlitTint(dest, font->bitmap, x, y, g->x, g->y, g->w, g->h, color);
+				tigrBlitTintScaled(dest,font->bitmap,x,y,g->w*xs, g->h*ys,g->x,g->y,g->w,g->h,color);
+        x += g->w * xs;
+    }
+}
+
+
 int tigrTextWidth(TigrFont* font, const char* text) {
     int x = 0, w = 0, c;
     tigrSetupFont(font);
@@ -1932,8 +1927,6 @@ int tigrTextHeight(TigrFont* font, const char* text) {
 //////// End of inlined file: tigr_print.c ////////
 
 //////// Start of inlined file: tigr_win.c ////////
-
-#ifndef TIGR_HEADLESS
 
 //#include "tigr_internal.h"
 #include <assert.h>
@@ -2722,14 +2715,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 }
 #endif
 
-#endif // #ifndef TIGR_HEADLESS
 //////// End of inlined file: tigr_win.c ////////
 
 //////// Start of inlined file: tigr_osx.c ////////
 
-#ifndef TIGR_HEADLESS
-
-// originally based on https://github.com/jimon/osx_app_in_plain_c
+// this one is based on https://github.com/jimon/osx_app_in_plain_c
 
 //#include "tigr_internal.h"
 //////// Start of inlined file: tigr_objc.h ////////
@@ -2826,9 +2816,8 @@ enum {
     NSKeyDownMask = 1 << NSKeyDown,
     NSKeyUp = 11,
     NSKeyUpMask = 1 << NSKeyUp,
+    NSAllEventMask = NSUIntegerMax,
 };
-
-NSUInteger NSAllEventMask = NSUIntegerMax;
 
 extern id NSApp;
 extern id const NSDefaultRunLoopMode;
@@ -2840,7 +2829,7 @@ bool terminated = false;
 
 static uint64_t tigrTimestamp = 0;
 
-void _tigrResetTime(void) {
+void _tigrResetTime() {
     tigrTimestamp = mach_absolute_time();
 }
 
@@ -2858,7 +2847,7 @@ TigrInternal* _tigrInternalCocoa(id window) {
 }
 
 // we gonna construct objective-c class by hand in runtime, so wow, so hacker!
-NSUInteger applicationShouldTerminate(id self, SEL sel, id sender) {
+NSUInteger applicationShouldTerminate(id self, SEL _sel, id sender) {
     terminated = true;
     return 0;
 }
@@ -2951,7 +2940,7 @@ static void _showPools(const char* context) {
 #define showPools(x)
 #endif
 
-static id pushPool(void) {
+static id pushPool() {
     id pool = objc_msgSend_id(class("NSAutoreleasePool"), sel("alloc"));
     return objc_msgSend_id(pool, sel("init"));
 }
@@ -2960,12 +2949,12 @@ static void popPool(id pool) {
     objc_msgSend_void(pool, sel("drain"));
 }
 
-void _tigrCleanupOSX(void) {
+void _tigrCleanupOSX() {
     showPools("cleanup");
     popPool(autoreleasePool);
 }
 
-void tigrInitOSX(void) {
+void tigrInitOSX() {
     if (tigrOSXInited)
         return;
 
@@ -3145,6 +3134,10 @@ Tigr* tigrWindow(int w, int h, const char* title, int flags) {
 
     objc_msgSend_void_bool(NSApp, sel("activateIgnoringOtherApps:"), YES);
 
+    // Wrap a bitmap around it.
+    bmp = tigrBitmap2(w, h, sizeof(TigrInternal));
+    bmp->handle = window;
+
     NSSize windowContentSize = _tigrContentBackingSize(window);
 
     // In AUTO mode, always use a 1:1 pixel size, unless downscaled by tigrEnforceScale below.
@@ -3159,9 +3152,6 @@ Tigr* tigrWindow(int w, int h, const char* title, int flags) {
         h = windowContentSize.height / windowScale;
         bitmapScale = tigrEnforceScale(bitmapScale, flags);
     }
-
-    bmp = tigrBitmap2(w, h, sizeof(TigrInternal));
-    bmp->handle = window;
 
     // Set the handle
     object_setInstanceVariable(wdg, "tigrHandle", (void*)bmp);
@@ -3694,28 +3684,29 @@ void tigrUpdate(Tigr* bmp) {
         eventMask &= ~(NSKeyDownMask | NSKeyUpMask);
     }
 
+    id distantPast = objc_msgSend_id(class("NSDate"), sel("distantPast"));
     id event = 0;
+    int processedEvents;
     BOOL visible = 0;
-
-    uint64_t now = mach_absolute_time();
-    uint64_t passed = now - tigrTimestamp;
 
     do {
         event =
             objc_msgSend_t(id, NSUInteger, id, id, BOOL)(NSApp, sel("nextEventMatchingMask:untilDate:inMode:dequeue:"),
-                                                         eventMask, nil, NSDefaultRunLoopMode, YES);
+                                                         eventMask, distantPast, NSDefaultRunLoopMode, YES);
 
         if (event != 0) {
+            processedEvents++;
             _tigrOnCocoaEvent(event, window);
         } else {
             visible = _tigrIsWindowVisible(window);
         }
     } while (event != 0 || !visible);
 
-    // The event processing loop above blocks during resize, which causes updates to freeze
-    // but real time keeps ticking. We pretend that the event processing took no time
-    // to avoid huge jumps in tigrTime.
-    tigrTimestamp = mach_absolute_time() - passed;
+    if (processedEvents) {
+        // The event processing loop above is blocking, which causes timing to freeze.
+        // Reset the time here to hide that fact from client code.
+        _tigrResetTime();
+    }
 
     // do runloop stuff
     objc_msgSend_void(NSApp, sel("updateWindows"));
@@ -3822,7 +3813,7 @@ int tigrReadChar(Tigr* bmp) {
     return c;
 }
 
-float tigrTime(void) {
+float tigrTime() {
     static mach_timebase_info_data_t timebaseInfo;
 
     if (timebaseInfo.denom == 0) {
@@ -3837,14 +3828,11 @@ float tigrTime(void) {
     return (float)elapsed;
 }
 
-#endif // __MACOS__
-#endif // #ifndef TIGR_HEADLESS
+#endif
 
 //////// End of inlined file: tigr_osx.c ////////
 
 //////// Start of inlined file: tigr_ios.c ////////
-
-#ifndef TIGR_HEADLESS
 
 //#include "tigr_internal.h"
 //#include "tigr_objc.h"
@@ -4364,8 +4352,6 @@ void* tigrReadFile(const char* fileName, int* length) {
 
 #endif  // __IOS__
 
-#endif // #ifndef TIGR_HEADLESS
-
 //////// End of inlined file: tigr_ios.c ////////
 
 //////// Start of inlined file: tigr_android.h ////////
@@ -4418,15 +4404,12 @@ void tigr_android_destroy();
 
 //////// Start of inlined file: tigr_linux.c ////////
 
-#ifndef TIGR_HEADLESS
-
 //#include "tigr_internal.h"
 
 #if __linux__ && !__ANDROID__
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <stdarg.h>
 #include <sys/time.h>
@@ -4434,7 +4417,6 @@ void tigr_android_destroy();
 #include <X11/Xlib.h>
 #include <X11/Xlocale.h>
 #include <X11/XKBlib.h>
-#include <X11/Xatom.h>
 #include <GL/glx.h>
 
 static Display* dpy;
@@ -4444,7 +4426,7 @@ static Atom wmDeleteMessage;
 static XIM inputMethod;
 static GLXFBConfig fbConfig;
 
-static PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = 0;
+PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = 0;
 
 static void initX11Stuff() {
     static int done = 0;
@@ -4595,10 +4577,20 @@ Tigr* tigrWindow(int w, int h, const char* title, int flags) {
     XMapWindow(dpy, xwin);
 
     if (flags & TIGR_FULLSCREEN) {
-        // https://superuser.com/questions/1680077/does-x11-actually-have-a-native-fullscreen-mode
-        Atom wm_state   = XInternAtom (dpy, "_NET_WM_STATE", true );
-        Atom wm_fullscreen = XInternAtom (dpy, "_NET_WM_STATE_FULLSCREEN", true );
-        XChangeProperty(dpy, xwin, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+        // https://www.tonyobryan.com//index.php?article=9
+        WindowHints hints;
+        Atom property;
+        hints.flags = 2;
+        hints.decorations = 0;
+        property = XInternAtom(dpy, "_MOTIF_WM_HINTS", True);
+        XChangeProperty(dpy, xwin, property, property, 32, PropModeReplace, (unsigned char*)&hints, 5);
+        int screen = DefaultScreen(dpy);
+        int dWidth = DisplayWidth(dpy, screen);
+        int dHeight = DisplayHeight(dpy, screen);
+        XMoveResizeWindow(dpy, xwin, 0, 0, dWidth, dHeight);
+        XMapRaised(dpy, xwin);
+        XGrabPointer(dpy, xwin, True, 0, GrabModeAsync, GrabModeAsync, xwin, 0L, CurrentTime);
+        XGrabKeyboard(dpy, xwin, False, GrabModeAsync, GrabModeAsync, CurrentTime);
     } else {
         // Wait for window to get mapped
         for (;;) {
@@ -5053,13 +5045,9 @@ int tigrTouch(Tigr* bmp, TigrTouchPoint* points, int maxPoints) {
 
 #endif  // __linux__ && !__ANDROID__
 
-#endif // #ifndef TIGR_HEADLESS
-
 //////// End of inlined file: tigr_linux.c ////////
 
 //////// Start of inlined file: tigr_android.c ////////
-
-#ifndef TIGR_HEADLESS
 
 //#include "tigr_internal.h"
 
@@ -5816,13 +5804,10 @@ void* tigrReadFile(const char* fileName, int* length) {
 }
 
 #endif  // __ANDROID__
-#endif // #ifndef TIGR_HEADLESS
 
 //////// End of inlined file: tigr_android.c ////////
 
 //////// Start of inlined file: tigr_gl.c ////////
-
-#ifndef TIGR_HEADLESS
 
 //#include "tigr_internal.h"
 #include <assert.h>
@@ -6281,7 +6266,7 @@ void tigrGAPIPresent(Tigr* bmp, int w, int h) {
 }
 
 #endif
-#endif // #ifndef TIGR_HEADLESS
+
 //////// End of inlined file: tigr_gl.c ////////
 
 //////// Start of inlined file: tigr_utils.c ////////
@@ -6396,8 +6381,6 @@ char* tigrEncodeUTF8(char* text, int cp) {
 #undef EMIT
 }
 
-#ifndef TIGR_HEADLESS
-
 int tigrBeginOpenGL(Tigr* bmp) {
 #ifdef TIGR_GAPI_GL
     TigrInternal* win = tigrInternal(bmp);
@@ -6425,8 +6408,6 @@ void tigrSetPostFX(Tigr* bmp, float p1, float p2, float p3, float p4) {
     win->p3 = p3;
     win->p4 = p4;
 }
-
-#endif // TIGR_HEADLESS
 
 //////// End of inlined file: tigr_utils.c ////////
 
