@@ -26,10 +26,6 @@ typedef struct {
   int active;
 } TProjectile;
 
-
-// void update(float *dt, float *remaining, Tigr *screen, float *playerx,
-//             float *playery, float *playerxs, float *playerys);
-
 // Modulos externos
 int menu();
 void updatePlayer(TPlayer *player, Tigr *screen);
@@ -40,7 +36,7 @@ void shoot(TProjectile projectiles[], TPlayer player, Tigr *screen);
 void drawEnemy(TPlayer *enemy, Tigr *screen);
 void updateEnemy(TPlayer *enemy, Tigr *screen, float enemy_speed);
 void updateAndDrawEnemies(TPlayer enemies[], int num_enemies, Tigr *screen, float enemy_speed);
-//void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed);
+
 
 
 int main(int argc, char *argv[]) 
@@ -48,53 +44,18 @@ int main(int argc, char *argv[])
 
   // Variables básicas
   float playerxs = 0, playerys = 0;
-  // int dif;
-  Tigr *screen, *background; //*player
-
-
-  /* do {
-
-      //Llamada a la función menú
-      dif = menu();
-
-      switch (dif)
-      {
-      case 1: // Fácil.
-
-        TPlayer enemies[4];
-
-        break;
-      
-      case 2: // Normal
-
-        TPlayer enemies[6];
-
-        break;
-      
-      case 3: // Difiícil
-
-        TPlayer enemies[8];
-
-        break;
-
-      }
-
-  } while (dif != 0); */
+  Tigr *screen, *background;
   
   // Crea ventana
-  screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game 1", 0);
+  screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bongo Alpha Test", TIGR_2X);
   background = tigrBitmap(screen->w, screen->h);
 
-  /* char *text = (char *)tigrReadFile("res/info.txt", 0);
-  if (!text)
-    tigrError(0, "Cannot load info.txt"); */
+
 
   // Inicialización de las structuras con 
   // sus tipos de datos correspondientes
   TPlayer player = { SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - PLAYER_HEIGHT - 10, 5.0f };
 
-  /* TPlayer enemy = { SCREEN_HEIGHT/2, SCREEN_WIDTH/2, 5.0f };
-  TPlayer enemy2 = { SCREEN_HEIGHT, SCREEN_WIDTH, 5.0f }; */
 
   TPlayer enemies[4] = {
     { SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT/2, 5.0f },
@@ -111,12 +72,6 @@ int main(int argc, char *argv[])
 
   // Main background
   tigrClear(background, tigrRGB(30, 132, 73));
-
-  // Green grass
-  //tigrFill(background, 0, player.y - 80, SCREEN_WIDTH, 2, tigrRGB(0, 0, 0));
-
-  // White line
-  // tigrLine(background, 0, 201, 320, 201, tigrRGB(255, 255, 255));
 
 
   // Bucle principal de juego
@@ -141,7 +96,7 @@ int main(int argc, char *argv[])
     drawProjectiles(projectiles, screen);
 
    
-    // Update screen input
+    // Actualiza la pantalla
     tigrUpdate(screen);
   }
 
@@ -154,21 +109,3 @@ int main(int argc, char *argv[])
   tigrFree(background);
   return 0;
 }
-
-/* int menu() {
-// Creación de la varible dificultad
-int dificultad;
-do {
-printf("************Vienvenido a Bango************\n");
-printf("------------------------------------------\n");
-printf("Elige una de las siguentes dificultades:\n");
-printf("1. Fácil\n");
-printf("2. Normal\n");
-printf("3. Difícil\n");
-pritnf("Elija la dificultad: ");
-scanf("%d", &dificultad);
-
-} while (dificultad < 0 || dificultad > 2);
-
-return dificultad;
-} */
