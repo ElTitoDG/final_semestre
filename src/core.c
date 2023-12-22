@@ -31,6 +31,7 @@ typedef struct {
   int active;
 } TProjectile;
 
+
 // Función encargada de gestionar el movimiento y colisiones del personajes
 void updatePlayer(TPlayer *player, Tigr *screen) 
 {
@@ -143,7 +144,8 @@ void updateAndDrawEnemies(TPlayer enemies[], int num_enemies, Tigr *screen, floa
     }
 }
 
-/* void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed) 
+
+void shootUpdate(TPlayer enemies[], int num_enemies, TProjectile projectiles[], Tigr *screen, float enemy_speed) 
 {
     for (int i = 0; i < num_enemies; ++i) {
         // Comprobar si algún proyectil activo ha golpeado a este enemigo
@@ -167,4 +169,4 @@ void updateAndDrawEnemies(TPlayer enemies[], int num_enemies, Tigr *screen, floa
             drawEnemy(&enemies[i], screen);
         }
     }
-} */
+}
